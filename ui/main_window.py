@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Hello World App")
+        self.setWindowTitle('Hello World App')
 
         # Set up UI components
         self.central_widget = QtWidgets.QWidget()
@@ -15,12 +15,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.layout = QtWidgets.QVBoxLayout(self.central_widget)
 
         # QLabel for displaying messages
-        self.label = QtWidgets.QLabel("Click the button to fetch a message")
+        self.label = QtWidgets.QLabel('Click the button to fetch a message')
         self.label.setAlignment(Qt.AlignCenter)
         self.layout.addWidget(self.label)
 
         # QPushButton for triggering requests
-        self.pushButton = QtWidgets.QPushButton("Fetch Message")
+        self.pushButton = QtWidgets.QPushButton('Fetch Message')
         self.layout.addWidget(self.pushButton)
 
         self.pushButton.clicked.connect(self.fetch_message)

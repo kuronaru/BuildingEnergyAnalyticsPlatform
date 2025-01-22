@@ -1,15 +1,15 @@
 import sys
-from PyQt5.QtWidgets import QApplication
 from threading import Thread
-from applications import create_app, db
+
+from PyQt5.QtWidgets import QApplication
+from applications import create_app
 from ui.main_window import MainWindow
+from ui.ui_login import LoginApp
 
 
 def start_flask():
     app = create_app()
-    with app.app_context():
-        db.create_all()  # Ensure the database tables are created
-    app.run(debug=True, use_reloader=False)
+    app.run(use_reloader=False)
 
 
 if __name__ == '__main__':
@@ -20,6 +20,7 @@ if __name__ == '__main__':
 
     # Start PyQt application
     qt_app = QApplication(sys.argv)
-    main_window = MainWindow()
+    main_window = LoginApp()
     main_window.show()
+    # main_window = MainWindow()
     sys.exit(qt_app.exec_())
