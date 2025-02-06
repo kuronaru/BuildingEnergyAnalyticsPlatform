@@ -1,42 +1,96 @@
-import requests
-from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import (
+    QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout, QStackedWidget
+)
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
 
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle('Hello World App')
+        self.setWindowTitle('Main Menu')
+        self.resize(1000, 1000)
 
-        # Set up UI components
-        self.central_widget = QtWidgets.QWidget()
+        # 创建主窗口
+        self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
 
-        self.layout = QtWidgets.QVBoxLayout(self.central_widget)
+        # 创建主布局（垂直布局）
+        main_layout = QVBoxLayout(self.central_widget)
 
-        # QLabel for displaying messages
-        self.label = QtWidgets.QLabel('Click the button to fetch a message')
-        self.label.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(self.label)
+        # 创建导航栏（横向布局）
+        self.nav_layout = QHBoxLayout()
 
-        # QPushButton for triggering requests
-        self.pushButton = QtWidgets.QPushButton('Fetch Message')
-        self.layout.addWidget(self.pushButton)
+        # 按钮样式
+        self.default_style = """
+            QPushButton {
+                background-color: #f0f0f0;
+                color: black;
+                border: 2px solid #ccc;
+                border-radius: 5px;
+                padding: 8px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+        """
+        self.selected_style = """
+            QPushButton {
+                background-color: #4CAF50; /* 绿色 */
+                color: white;
+                border: 2px solid #388E3C;
+                border-radius: 5px;
+                padding: 8px;
+            }
+        """
 
-        self.pushButton.clicked.connect(self.fetch_message)
-        # 导入使用PyQt Designer设计UI时生成的.ui文件
-        # uic.loadUi('ui/ui_main_window.ui', self)  # Load UI file
-        # self.init_ui()
+        # 创建5个按钮
+        self.button_names = [
+            "Homepage", "Data Mgmt", "Sensor",
+            "Machine Learning", "Visualization"
+        ]
+        self.buttons = []
+        for index, name in enumerate(self.button_names):
+            button = QPushButton(name)
+            button.setFont(QFont("Arial", 10, QFont.Bold))
+            button.setStyleSheet(self.default_style)
+            button.clicked.connect(lambda _, i=index: self.switch_page(i))
+            self.nav_layout.addWidget(button)
+            self.buttons.append(button)
 
-    # def init_ui(self):
-    #     self.pushButton.clicked.connect(self.fetch_message)
+        main_layout.addLayout(self.nav_layout)  # 添加导航栏
 
-    def fetch_message(self):
-        try:
-            response = requests.get('http://127.0.0.1:5000/api/hello')
-            if response.status_code == 200:
-                self.label.setText(response.json().get('message', 'No message'))
+        # 创建内容区域（QStackedWidget）
+        self.stacked_widget = QStackedWidget()
+        main_layout.addWidget(self.stacked_widget)
+
+        # 添加5个页面
+        self.pages = []
+        for name in self.button_names:
+            page = self.create_page(name)
+            self.stacked_widget.addWidget(page)
+            self.pages.append(page)
+
+        # 默认选中第一个按钮
+        self.switch_page(0)
+
+    def create_page(self, title):
+        """创建模块页面"""
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        label = QLabel(f"{title} Data Display Area")
+        label.setAlignment(Qt.AlignCenter)
+        label.setFont(QFont("Arial", 14, QFont.Bold))
+        layout.addWidget(label)
+        return page
+
+    def switch_page(self, index):
+        """切换页面并更新按钮样式"""
+        self.stacked_widget.setCurrentIndex(index)
+
+        # 更新按钮颜色
+        for i, button in enumerate(self.buttons):
+            if i == index:
+                button.setStyleSheet(self.selected_style)  # 当前选中按钮变绿
             else:
-                self.label.setText('Error: Unable to fetch message')
-        except Exception as e:
-            self.label.setText(f'Error: {str(e)}')
+                button.setStyleSheet(self.default_style)  # 其他按钮恢复默认样式

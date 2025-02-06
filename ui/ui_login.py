@@ -8,6 +8,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap, QColor, QPainter
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 
+from ui.main_window import MainWindow
 
 from server_status import SUCCESS
 
@@ -121,7 +122,14 @@ class LoginApp(QWidget):
             print('response ', response.text)
             if result['status'] == SUCCESS:
                 QMessageBox.information(self, 'Success', result['message'])
+                self.open_main_window()
             else:
                 QMessageBox.warning(self, 'Error', result['message'])
         except requests.ConnectionError:
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
+
+    def open_main_window(self):
+        """ 登录成功后打开主界面，并关闭当前窗口 """
+        self.main_window = MainWindow()
+        self.main_window.show()
+        self.close()  # 关闭当前登录窗口
