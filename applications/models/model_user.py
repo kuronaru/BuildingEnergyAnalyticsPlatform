@@ -1,4 +1,3 @@
-from applications.database.db_user import UserDatabase
 from applications.extensions import db
 
 
@@ -13,25 +12,42 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, comment='用户ID')
     username = db.Column(db.String(20), comment='用户名')
     password = db.Column(db.String(128), comment='密码哈希')
+    authority = db.Column(db.Integer, comment='权限等级')
 
 
 class UserModel:
     """
-    常规的数据库模型类实现，对每个单独的功能设置了相对应的函数调用，定义方便但是代码比较长，需要对SQL语言有一定了解。
+    用户模型功能类实现，对每个单独的功能设置了相对应的函数调用，实现后端功能解耦合。
     """
-    def __init__(self):
-        self.db = UserDatabase()
-
-    def authenticate_user(self, username, password):
-        query = "SELECT * FROM users WHERE username = ? AND password = ?"
-        results = self.db.execute_query(query, (username, password))
-        return len(results) > 0
-
-    def create_user(self, username, password):
+    @staticmethod
+    def create_user(username, password, authority=1):
         try:
-            query = "INSERT INTO users (username, password) VALUES (?, ?)"
-            self.db.execute_query(query, (username, password))
+            new_user = User(username=username, password=password, authority=authority)
+            db.session.add(new_user)
+            db.session.commit()
             return True
         except Exception as e:
             print(f"Error creating user: {e}")
             return False
+        finally:
+            db.session.close()
+
+    @staticmethod
+    def check_authority(username, authority):
+        user = User.query.filter_by(username=username).first()
+        if user.authority <= authority:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def check_credential(username, password):
+        user = User.query.filter_by(username=username).first()
+        if user.password == password:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def get_user_info(username):
+        pass

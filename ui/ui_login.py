@@ -1,6 +1,8 @@
 import requests
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
 
+from server_status import SUCCESS
+
 
 class LoginApp(QWidget):
     def __init__(self):
@@ -42,7 +44,7 @@ class LoginApp(QWidget):
             )
             result = response.json()
             print('response ', response.text)
-            if result['status'] == 'success':
+            if result['status'] == SUCCESS:
                 QMessageBox.information(self, 'Success', result['message'])
             else:
                 QMessageBox.warning(self, 'Error', result['message'])

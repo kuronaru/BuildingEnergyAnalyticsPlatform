@@ -2,7 +2,6 @@ from flask import Flask
 
 from applications.database.db_database_manager import DatabaseManager
 from applications.extensions import db
-from applications.services.comm.msg_api import msg_api_bp
 from applications.services.sv_login import login_bp
 
 
@@ -34,7 +33,6 @@ def create_app():
     app.db_manager = db_manager
 
     # 注册蓝图
-    app.register_blueprint(msg_api_bp, url_prefix='/msg')
     app.register_blueprint(login_bp, url_prefix='/login')
 
     return app
