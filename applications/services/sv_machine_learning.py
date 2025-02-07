@@ -87,6 +87,10 @@ def ml_script():
         return jsonify({'status': FAILURE, 'message': 'Failed to save script.'})
 
 
+def preprocess_data(input_data):
+    pass
+
+
 @ml_bp.route('/ml_inference', methods=['POST'])
 def ml_inference():
     """

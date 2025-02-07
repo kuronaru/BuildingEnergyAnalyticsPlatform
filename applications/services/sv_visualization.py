@@ -1,5 +1,4 @@
-from flask import Blueprint, jsonify, request
-from applications.models.database_utils import DatabaseHandler  # 假设有数据库操作类
+from flask import Blueprint, jsonify, request, current_app
 
 from server_status import SUCCESS, FAILURE
 
@@ -11,9 +10,9 @@ def get_table_list():
     """
     功能：返回数据库中的所有表列表
     """
-    db_handler = DatabaseHandler()  # 数据库操作类
     try:
-        tables = db_handler.get_all_tables()
+        db_manager = current_app.config['db_manager']
+        tables = db_manager.get_all_tables()
         return jsonify({'status': SUCCESS, 'tables': tables})
     except Exception as e:
         return jsonify({'status': FAILURE, 'message': str(e)})
@@ -28,9 +27,9 @@ def get_table_preview():
     table_name = data.get('table_name')
     limit = data.get('limit', 10)
 
-    db_handler = DatabaseHandler()  # 数据库操作类
     try:
-        preview_data = db_handler.get_preview_data(table_name, limit)
+        db_manager = current_app.config['db_manager']
+        preview_data = db_manager.get_preview_data(table_name, limit)
         return jsonify({'status': SUCCESS, 'preview': preview_data})
     except Exception as e:
         return jsonify({'status': FAILURE, 'message': str(e)})
@@ -43,9 +42,9 @@ def get_table_columns():
     data = request.get_json()
     table_name = data.get('table_name')
 
-    db_handler = DatabaseHandler()  # 数据库操作类
     try:
-        columns = db_handler.get_table_columns(table_name)
+        db_manager = current_app.config['db_manager']
+        columns = db_manager.get_table_columns(table_name)
         return jsonify({'status': SUCCESS, 'columns': columns})
     except Exception as e:
         return jsonify({'status': FAILURE, 'message': str(e)})
@@ -65,9 +64,9 @@ def generate_line_chart():
     x_field = data.get('x_field')
     y_field = data.get('y_field')
 
-    db_handler = DatabaseHandler()
     try:
-        dataset = db_handler.get_data_for_fields(table_name, x_field, y_field)
+        db_manager = current_app.config['db_manager']
+        dataset = db_manager.get_data_for_fields(table_name, x_field, y_field)
 
         # 使用 Matplotlib 生成图表
         plt.figure()
@@ -98,9 +97,9 @@ def generate_bar_chart():
     x_field = data.get('x_field')
     y_field = data.get('y_field')
 
-    db_handler = DatabaseHandler()
     try:
-        dataset = db_handler.get_data_for_fields(table_name, x_field, y_field)
+        db_manager = current_app.config['db_manager']
+        dataset = db_manager.get_data_for_fields(table_name, x_field, y_field)
 
         # 使用 Matplotlib 生成柱状图
         plt.figure()
@@ -130,9 +129,9 @@ def generate_pie_chart():
     category_field = data.get('category_field')
     value_field = data.get('value_field')
 
-    db_handler = DatabaseHandler()
     try:
-        dataset = db_handler.get_data_for_fields(table_name, category_field, value_field)
+        db_manager = current_app.config['db_manager']
+        dataset = db_manager.get_data_for_fields(table_name, category_field, value_field)
 
         # 使用 Matplotlib 生成饼图
         plt.figure()
@@ -159,11 +158,11 @@ def get_multiple_datasets():
     data = request.get_json()
     tables_info = data.get('tables_info')  # 包含 {table_name, x_field, y_field} 列表
 
-    db_handler = DatabaseHandler()
     try:
+        db_manager = current_app.config['db_manager']
         datasets = []
         for table_info in tables_info:
-            dataset = db_handler.get_data_for_fields(table_info['table_name'], table_info['x_field'],
+            dataset = db_manager.get_data_for_fields(table_info['table_name'], table_info['x_field'],
                                                      table_info['y_field'])
             datasets.append({'table': table_info['table_name'], 'data': dataset})
 

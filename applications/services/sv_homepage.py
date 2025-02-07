@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
 
+from applications.models.model_bms import BMSModel
+from applications.models.model_sensor import SensorModel
 from applications.models.model_user import UserModel
 from server_status import SUCCESS, FAILURE
 
@@ -46,6 +48,10 @@ def get_sensor_info():
         return jsonify({'status': SUCCESS, 'data': sensor_info})
     else:
         return jsonify({'status': FAILURE, 'data': None})
+
+
+def logout_user(username):
+    return True
 
 
 @homepage_bp.route('/logout', methods=['POST'])
