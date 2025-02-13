@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
 
+from applications.database.db_user_manager import UserManager
 from applications.models.model_bms import BMSModel
 from applications.models.model_sensor import SensorModel
-from applications.models.model_user import UserModel
 from server_status import SUCCESS, FAILURE
 
 homepage_bp = Blueprint('homepage', __name__)
@@ -16,8 +16,8 @@ def get_user_info():
     data = request.get_json()
     username = data.get('username')
 
-    user_model = UserModel()
-    user_info = user_model.get_user_info(username)
+    user_manager = UserManager.find_user_by_name(username)
+    user_info = user_manager.user_info()
     if user_info:
         return jsonify({'status': SUCCESS, 'data': user_info})
     else:

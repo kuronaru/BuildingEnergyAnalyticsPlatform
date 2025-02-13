@@ -1,16 +1,13 @@
 import random
 import string
 
-
 import requests
 from PyQt5.QtCore import Qt
-
 from PyQt5.QtGui import QFont, QPixmap, QColor, QPainter
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 
-from ui.main_window import MainWindow
-
 from server_status import SUCCESS
+from ui.main_window import MainWindow
 
 
 class LoginApp(QWidget):
@@ -62,6 +59,12 @@ class LoginApp(QWidget):
         self.login_button.setFont(QFont("Arial", 11, QFont.Bold))
         self.login_button.clicked.connect(self.handle_login)
         layout.addWidget(self.login_button)
+
+        # 注册按钮
+        self.register_button = QPushButton('Register')
+        self.register_button.setFont(QFont("Arial", 11, QFont.Bold))
+        self.register_button.clicked.connect(self.handle_register)  # 注册按钮点击事件
+        layout.addWidget(self.register_button)
 
         self.setLayout(layout)
         # 设置样式表
@@ -115,16 +118,41 @@ class LoginApp(QWidget):
         # 向 Flask 服务发送 POST 请求
         try:
             response = requests.post(
-                'http://127.0.0.1:5000/login/auth',
+                'http://127.0.0.1:5000/login',
                 json={'username': username, 'password': password}
             )
             result = response.json()
-            print('response ', response.text)
             if result['status'] == SUCCESS:
                 QMessageBox.information(self, 'Success', result['message'])
                 self.open_main_window()
             else:
                 QMessageBox.warning(self, 'Error', result['message'])
+        except requests.ConnectionError:
+            QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
+
+    def handle_register(self):
+        """
+        注册逻辑：获取用户输入的用户名和密码并调用后端注册接口。
+        """
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        # 校验用户输入
+        if not username or not password:
+            QMessageBox.warning(self, 'Error', 'Please enter both username and password')
+            return
+
+        # 向 Flask 服务发送注册请求
+        try:
+            response = requests.post(
+                'http://127.0.0.1:5000/register',
+                json={'username': username, 'password': password, 'authority': 1}  # 默认权限为 1
+            )
+            result = response.json()
+            if response.status_code == 201 and result['status'] == SUCCESS:
+                QMessageBox.information(self, 'Success', result['message'])
+            else:
+                QMessageBox.warning(self, 'Error', result.get('message', 'Registration failed'))
         except requests.ConnectionError:
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
 

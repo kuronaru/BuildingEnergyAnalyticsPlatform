@@ -1,6 +1,9 @@
 from flask import Flask
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 
 from applications.database.db_database_manager import DatabaseManager
+from applications.database.db_user_manager import UserManager
 from applications.extensions import db
 from applications.services.sv_data_mgmt import data_mgmt_bp
 from applications.services.sv_homepage import homepage_bp
@@ -9,12 +12,24 @@ from applications.services.sv_machine_learning import ml_bp
 from applications.services.sv_sensor import sensor_bp
 from applications.services.sv_visualization import viz_bp
 
+bcrypt = Bcrypt()
+login_manager = LoginManager()
 
 def create_app():
     app = Flask(__name__)
 
     # 读取配置文件config.py
     app.config.from_object('config.Config')
+
+    # 初始化
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+    login_manager.login_view = 'login.login'  # 未登录时重定向的端点
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        """通过用户 ID 加载用户对象，这里返回 UserManager 实例"""
+        return UserManager.find_user_by_id(user_id)
 
     # 初始化数据库
     db.init_app(app)
@@ -38,7 +53,7 @@ def create_app():
     app.db_manager = db_manager
 
     # 注册蓝图
-    app.register_blueprint(login_bp, url_prefix='/login')
+    app.register_blueprint(login_bp)
     app.register_blueprint(homepage_bp, url_prefix='/homepage')
     app.register_blueprint(data_mgmt_bp, url_prefix='/data')
     app.register_blueprint(sensor_bp, url_prefix='/sensor')

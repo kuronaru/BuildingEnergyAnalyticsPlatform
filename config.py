@@ -29,7 +29,7 @@
 class Config:
     # SERVER_NAME = '127.0.0.1:5000'
     DEBUG = True
-    # SECRET_KEY = 'your_secret_key'
+    SECRET_KEY = '114514'
     # SQLALCHEMY_DATABASE_URI = 'sqlite:///users.db'  # 使用 SQLite 数据库
     SQLALCHEMY_BINDS = {
         'users': 'sqlite:///users.db'
