@@ -1,0 +1,9 @@
+<RCC>
+  <qresource>
+    <file>machine.png</file>
+    <file>homepage.png</file>
+    <file>database.png</file>
+    <file>visualization.png</file>
+    <file>sensor.png</file>
+  </qresource>
+</RCC>
