@@ -1,6 +1,6 @@
 import sys
+import asyncio
 from threading import Thread
-
 from PyQt5.QtWidgets import QApplication
 
 
@@ -10,7 +10,7 @@ from ui.connector import Ui_connector
 
 from ui.ui_login import LoginApp
 
-
+from ui.bms_integration import BMSIntegrationApp
 
 def start_flask():
     app = create_app()
@@ -38,4 +38,6 @@ if __name__ == '__main__':
     ui = Ui_connector()  # 创建 UI 实例
     ui.setupUi(connector)  # 将 UI 设置到主窗口上
     connector.show()
+    main_window = BMSIntegrationApp()
+    main_window.show()
     sys.exit(qt_app.exec_())
