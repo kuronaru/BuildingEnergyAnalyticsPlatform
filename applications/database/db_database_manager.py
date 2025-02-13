@@ -12,6 +12,7 @@ class DatabaseManager:
         path = os.path.join('instance', db_path)
         self.databases[name] = sqlite3.connect(path)
 
+
     def close_all_connections(self):
         """关闭线程本地的所有数据库连接"""
         if hasattr(self.local, 'connections'):

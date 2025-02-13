@@ -2,12 +2,12 @@ from flask import Flask
 
 from applications.database.db_database_manager import DatabaseManager
 from applications.extensions import db
-from applications.services.sv_data_mgmt import data_mgmt_bp
-from applications.services.sv_homepage import homepage_bp
-from applications.services.sv_login import login_bp
-from applications.services.sv_machine_learning import ml_bp
-from applications.services.sv_sensor import sensor_bp
-from applications.services.sv_visualization import viz_bp
+# from applications.services.sv_data_mgmt import data_mgmt_bp
+# from applications.services.sv_homepage import homepage_bp
+# from applications.services.sv_login import login_bp
+# from applications.services.sv_machine_learning import ml_bp
+# from applications.services.sv_sensor import sensor_bp
+# from applications.services.sv_visualization import viz_bp
 
 
 def create_app():
@@ -38,11 +38,11 @@ def create_app():
     app.db_manager = db_manager
 
     # 注册蓝图
-    app.register_blueprint(login_bp, url_prefix='/login')
-    app.register_blueprint(homepage_bp, url_prefix='/homepage')
-    app.register_blueprint(data_mgmt_bp, url_prefix='/data')
-    app.register_blueprint(sensor_bp, url_prefix='/sensor')
-    app.register_blueprint(ml_bp, url_prefix='/ml')
-    app.register_blueprint(viz_bp, url_prefix='/viz')
+    # app.register_blueprint(login_bp, url_prefix='/login')
+    # app.register_blueprint(homepage_bp, url_prefix='/homepage')
+    # app.register_blueprint(data_mgmt_bp, url_prefix='/data')
+    # app.register_blueprint(sensor_bp, url_prefix='/sensor')
+    # app.register_blueprint(ml_bp, url_prefix='/ml')
+    # app.register_blueprint(viz_bp, url_prefix='/viz')
 
     return app
