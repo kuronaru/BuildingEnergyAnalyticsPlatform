@@ -10,8 +10,6 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
 
 from ui.main_window import MainWindow
 
-from server_status import SUCCESS
-
 
 class LoginApp(QWidget):
     def __init__(self):
@@ -120,7 +118,7 @@ class LoginApp(QWidget):
             )
             result = response.json()
             print('response ', response.text)
-            if result['status'] == SUCCESS:
+            if result['status'] == 'success':
                 QMessageBox.information(self, 'Success', result['message'])
                 self.open_main_window()
             else:
