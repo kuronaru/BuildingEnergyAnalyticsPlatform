@@ -1,13 +1,17 @@
 import random
 import string
 
+
 import requests
 from PyQt5.QtCore import Qt
+
 from PyQt5.QtGui import QFont, QPixmap, QColor, QPainter
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5 import QtWidgets
 
+#from ui.main_window import MainWindow
+from ui.mainwindow import Ui_Form
 from server_status import SUCCESS
-from ui.main_window import MainWindow
 
 
 class LoginApp(QWidget):
@@ -30,14 +34,18 @@ class LoginApp(QWidget):
         layout.addWidget(self.username_label)
         layout.addWidget(self.username_input)
 
+
         # 密码输入
         self.password_label = QLabel('Password:')
         self.password_label.setFont(QFont("Arial", 10))
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.Password)
+        self.username_input.returnPressed.connect(self.password_input.setFocus)
+        self.password_input.returnPressed.connect(self.handle_login)
         layout.addWidget(self.password_label)
         layout.addWidget(self.password_input)
 
+        """"
         # 验证码部分
         captcha_layout = QHBoxLayout()
         self.captcha_label = QLabel()
@@ -53,20 +61,18 @@ class LoginApp(QWidget):
         captcha_layout.addWidget(self.captcha_input)
         captcha_layout.addWidget(self.refresh_button)
         layout.addLayout(captcha_layout)
-
+        """
         # 登录按钮
         self.login_button = QPushButton('Login')
         self.login_button.setFont(QFont("Arial", 11, QFont.Bold))
         self.login_button.clicked.connect(self.handle_login)
         layout.addWidget(self.login_button)
-
+        self.setLayout(layout)
         # 注册按钮
         self.register_button = QPushButton('Register')
         self.register_button.setFont(QFont("Arial", 11, QFont.Bold))
         self.register_button.clicked.connect(self.handle_register)  # 注册按钮点击事件
         layout.addWidget(self.register_button)
-
-        self.setLayout(layout)
         # 设置样式表
         self.setStyleSheet("""
                 QWidget {
@@ -100,7 +106,7 @@ class LoginApp(QWidget):
             """)
 
     def refresh_captcha(self):
-        """ 生成新的验证码并更新 QLabel 显示 """
+       
         self.captcha_text = ''.join(random.sample(string.ascii_uppercase + string.digits, 5))
         pixmap = QPixmap(100, 40)
         pixmap.fill(QColor('white'))
@@ -122,6 +128,7 @@ class LoginApp(QWidget):
                 json={'username': username, 'password': password}
             )
             result = response.json()
+            print('response ', response.text)
             if result['status'] == SUCCESS:
                 QMessageBox.information(self, 'Success', result['message'])
                 self.open_main_window()
@@ -131,9 +138,7 @@ class LoginApp(QWidget):
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
 
     def handle_register(self):
-        """
-        注册逻辑：获取用户输入的用户名和密码并调用后端注册接口。
-        """
+
         username = self.username_input.text()
         password = self.password_input.text()
 
@@ -156,8 +161,12 @@ class LoginApp(QWidget):
         except requests.ConnectionError:
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
 
+
+
     def open_main_window(self):
         """ 登录成功后打开主界面，并关闭当前窗口 """
-        self.main_window = MainWindow()
-        self.main_window.show()
+        self.main_window = QtWidgets.QWidget()  # 创建一个主窗口
+        self.ui = Ui_Form()  # 创建 UI 实例
+        self.ui.setupUi(self.main_window)  # 将 UI 设置到主窗口上
+        self.main_window.show()  # 显示主窗口
         self.close()  # 关闭当前登录窗口
