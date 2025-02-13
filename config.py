@@ -36,7 +36,8 @@ class Config:
     # 绑定数据库路径
     SQLALCHEMY_BINDS = {
         'users': 'sqlite:///users.db',
-        'temperature': 'sqlite:///temperature.db'
+        'temperature': 'sqlite:///temperature.db',
+        'bms': 'sqlite:///bms.db'
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

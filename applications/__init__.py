@@ -12,6 +12,7 @@ from applications.services.sv_sensor import sensor_bp
 from applications.services.sv_visualization import viz_bp
 from applications.utils.database_manager import DatabaseManager
 from applications.utils.thread_pool_manager import ThreadPoolManager
+from applications.services.sv_bms_integration import bms_bp
 from logging_config import setup_logger
 
 
@@ -57,6 +58,9 @@ def create_app():
     # 添加数据库
     db_manager.add_database('users', 'users.db')
 
+    # 添加BMS数据库
+    db_manager.add_database('bms', 'bms.db')
+
     @app.teardown_appcontext
     def close_db(error):
         """在 Flask 应用线程结束时关闭连接"""
@@ -79,8 +83,8 @@ def create_app():
         ThreadPoolManager.shutdown()
 
     # 注册蓝图并初始化模块日志
-    blueprints = [login_bp, homepage_bp, data_mgmt_bp, sensor_bp, ml_bp, viz_bp]
-    url_prefix = ['/', '/homepage', '/data', '/sensor', '/ml', '/viz']
+    blueprints = [login_bp, homepage_bp, data_mgmt_bp, sensor_bp, ml_bp, viz_bp, bms_bp]
+    url_prefix = ['/', '/homepage', '/data', '/sensor', '/ml', '/viz', '/bms']
     for bp in blueprints:
         module_name = bp.import_name
         setup_logger(module_name, app.config)
