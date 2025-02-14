@@ -13,6 +13,3 @@ class SensorModel:
 
     def reconnect_sensor(self, sensor_id):
         pass
-
-    def get_sensor_info(self):
-        pass
