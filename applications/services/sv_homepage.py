@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from flask import Blueprint, request, jsonify
 
 from applications.database.db_user_manager import UserManager
@@ -6,6 +8,7 @@ from applications.models.model_sensor import SensorModel
 from server_status import SUCCESS, FAILURE
 
 homepage_bp = Blueprint('homepage', __name__)
+logger = getLogger(__name__)
 
 
 @homepage_bp.route('/get_user_info', methods=['GET'])
@@ -15,6 +18,7 @@ def get_user_info():
     """
     data = request.get_json()
     username = data.get('username')
+    logger.debug(f"get_user_info {username}")
 
     user_manager = UserManager.find_user_by_name(username)
     user_info = user_manager.user_info()

@@ -1,10 +1,13 @@
-from flask import Blueprint, request, jsonify, current_app
+from logging import getLogger
+
+from flask import Blueprint, request, jsonify
 from flask_login import login_user
 
-from server_status import SUCCESS, FAILURE
 from applications.database.db_user_manager import UserManager
+from server_status import SUCCESS, FAILURE
 
 login_bp = Blueprint('login', __name__)
+logger = getLogger(__name__)
 
 
 @login_bp.route('/login', methods=['POST'])
@@ -15,6 +18,7 @@ def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    logger.info(f"Login request received for user {username}")
 
     user_manager = UserManager.find_user_by_name(username)
     if user_manager and UserManager.verify_credentials(username, password):
