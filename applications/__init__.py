@@ -11,6 +11,7 @@ from applications.services.sv_machine_learning import ml_bp
 from applications.services.sv_sensor import sensor_bp
 from applications.services.sv_visualization import viz_bp
 from applications.utils.database_manager import DatabaseManager
+from applications.utils.thread_pool_manager import ThreadPoolManager
 from logging_config import setup_logger
 
 
@@ -22,14 +23,15 @@ def create_app():
 
     # 初始化全局日志
     app_logger = setup_logger('app', app.config)
-
-    # 初始化
     app_logger.info("Initializing Flask application...")
+
+    # 初始化Bcrypt
     bcrypt = Bcrypt()
     bcrypt.init_app(app)
     app.bcrypt = bcrypt
     app_logger.debug("Bcrypt initialized")
 
+    # 初始化LoginManager
     login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'login.login'  # 未登录时重定向的端点
@@ -57,12 +59,24 @@ def create_app():
 
     @app.teardown_appcontext
     def close_db(error):
-        """在每个线程结束时关闭连接"""
+        """在 Flask 应用线程结束时关闭连接"""
         db_manager.close_all_connections()
 
     # 存储 db_manager 到应用全局上下文
     app.db_manager = db_manager
     app_logger.debug("DatabaseManager initialized")
+
+    # 初始化线程池
+    # 通过配置文件设置最大工作线程数，默认 5 个线程
+    max_workers = app.config.get("THREAD_POOL_MAX_WORKERS", 5)
+    ThreadPoolManager.initialize(max_workers)
+    app.thread_pool = ThreadPoolManager  # 将线程池管理器绑定到 app 上
+    app_logger.debug(f"ThreadPoolManager initialized with max workers: {max_workers}")
+
+    @app.teardown_appcontext
+    def shutdown_thread_pool(error):
+        """在 Flask 应用线程结束时关闭线程池"""
+        ThreadPoolManager.shutdown()
 
     # 注册蓝图并初始化模块日志
     blueprints = [login_bp, homepage_bp, data_mgmt_bp, sensor_bp, ml_bp, viz_bp]

@@ -53,3 +53,6 @@ class Config:
         'sv_visualization': ('DEBUG', 'DEBUG'),
         'sv_sensor': ('DEBUG', 'DEBUG'),
     }
+
+    # 线程池配置
+    THREAD_POOL_MAX_WORKERS = 5
