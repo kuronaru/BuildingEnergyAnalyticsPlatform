@@ -1,3 +1,4 @@
+from flask import current_app
 from flask_login import UserMixin
 
 from applications.extensions import db
@@ -94,7 +95,7 @@ class UserManager(UserMixin):
         """
         验证用户名和密码是否匹配。
         """
-        from applications import bcrypt
+        bcrypt = current_app.bcrypt
         user = User.query.filter_by(username=username).first()
         if user and bcrypt.check_password_hash(user.password, password):
             return True

@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_login import login_user
 
 from applications.database.db_user_manager import UserManager
@@ -59,7 +59,7 @@ def register():
         return jsonify({'status': FAILURE, 'message': 'Username already exists'}), 409
 
     # 使用 Bcrypt 加密用户密码
-    from applications import bcrypt
+    bcrypt = current_app.bcrypt
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     # 调用 UserManager 中的 create_user 方法创建新用户

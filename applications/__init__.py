@@ -13,10 +13,6 @@ from applications.services.sv_visualization import viz_bp
 from applications.utils.database_manager import DatabaseManager
 from logging_config import setup_logger
 
-bcrypt = Bcrypt()
-login_manager = LoginManager()
-app_logger = None  # 创建全局应用日志
-
 
 def create_app():
     app = Flask(__name__)
@@ -25,14 +21,20 @@ def create_app():
     app.config.from_object('config.Config')
 
     # 初始化全局日志
-    global app_logger
     app_logger = setup_logger('app', app.config)
 
     # 初始化
     app_logger.info("Initializing Flask application...")
+    bcrypt = Bcrypt()
     bcrypt.init_app(app)
+    app.bcrypt = bcrypt
+    app_logger.debug("Bcrypt initialized")
+
+    login_manager = LoginManager()
     login_manager.init_app(app)
     login_manager.login_view = 'login.login'  # 未登录时重定向的端点
+    app.login_manager = login_manager
+    app_logger.debug("LoginManager initialized")
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -60,6 +62,7 @@ def create_app():
 
     # 存储 db_manager 到应用全局上下文
     app.db_manager = db_manager
+    app_logger.debug("DatabaseManager initialized")
 
     # 注册蓝图并初始化模块日志
     blueprints = [login_bp, homepage_bp, data_mgmt_bp, sensor_bp, ml_bp, viz_bp]
