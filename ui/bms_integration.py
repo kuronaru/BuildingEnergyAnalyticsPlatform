@@ -26,6 +26,7 @@ class BMSIntegrationApp(QWidget):
         self.ip_label.setFont(QFont("Arial", 10))
         self.ip_input = QLineEdit()
         self.ip_input.setPlaceholderText("Enter BMS Server IP (e.g., 192.168.0.1)")
+        self.ip_input.setText("10.249.156.165")
         layout.addWidget(self.ip_label)
         layout.addWidget(self.ip_input)
 
@@ -34,13 +35,9 @@ class BMSIntegrationApp(QWidget):
         self.port_label.setFont(QFont("Arial", 10))
         self.port_input = QLineEdit()
         self.port_input.setPlaceholderText("Enter BMS Server Port (e.g., 47808)")
+        self.port_input.setText("47809")
         layout.addWidget(self.port_label)
         layout.addWidget(self.port_input)
-
-        # 状态标签
-        self.status_label = QLabel('Status: Not connected')
-        self.status_label.setFont(QFont("Arial", 10))
-        layout.addWidget(self.status_label)
 
         # 按钮布局
         button_layout = QHBoxLayout()
@@ -56,6 +53,12 @@ class BMSIntegrationApp(QWidget):
         self.disconnect_button.setFont(QFont("Arial", 11, QFont.Bold))
         self.disconnect_button.clicked.connect(self.handle_disconnect)
         button_layout.addWidget(self.disconnect_button)
+
+        # 读取数据按钮
+        self.read_button = QPushButton('Read Data')
+        self.read_button.setFont(QFont("Arial", 11, QFont.Bold))
+        self.read_button.clicked.connect(self.handle_read_data)
+        button_layout.addWidget(self.read_button)
 
         layout.addLayout(button_layout)
         self.setLayout(layout)
@@ -114,7 +117,6 @@ class BMSIntegrationApp(QWidget):
             result = response.json()
 
             if result['status'] == SUCCESS:
-                self.status_label.setText(f"Status: Connected to {ip}:{port}")
                 QMessageBox.information(self, 'Success', result['message'])
             else:
                 QMessageBox.warning(self, 'Error', result['message'])
@@ -139,8 +141,43 @@ class BMSIntegrationApp(QWidget):
             result = response.json()
 
             if result['status'] == SUCCESS:
-                self.status_label.setText("Status: Not connected")
                 QMessageBox.information(self, 'Success', result['message'])
+            else:
+                QMessageBox.warning(self, 'Error', result['message'])
+        except requests.ConnectionError:
+            QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
+
+    def handle_read_data(self):
+        """ 处理读取数据操作 """
+        ip = self.ip_input.text().strip()
+        port = self.port_input.text().strip()
+
+        if not ip or not port:
+            QMessageBox.warning(self, 'Input Error', 'Please provide both IP and Port.')
+            return
+
+        db_name = "bms.db"
+        save_data = False
+
+        action = "start"
+
+        try:
+            # 向后端发送读取数据请求
+            response = requests.post(
+                'http://127.0.0.1:5000/bms/get_bms_data',
+                json={
+                    'action': action,
+                    'save_data': save_data,
+                    'db_name': db_name,
+                    'ip': ip,
+                    'port': port
+                }
+            )
+            result = response.json()
+
+            if result['status'] == SUCCESS:
+                # 显示数据
+                QMessageBox.information(self, 'BMS Data', result['message'])
             else:
                 QMessageBox.warning(self, 'Error', result['message'])
         except requests.ConnectionError:

@@ -8,7 +8,7 @@ from applications.extensions import db
 # from applications.services.sv_machine_learning import ml_bp
 # from applications.services.sv_sensor import sensor_bp
 # from applications.services.sv_visualization import viz_bp
-
+from applications.services.sv_bms_integration import bms_bp
 
 def create_app():
     app = Flask(__name__)
@@ -29,6 +29,9 @@ def create_app():
     # 添加数据库
     db_manager.add_database('users', 'users.db')
 
+    # 添加BMS数据库
+    db_manager.add_database('bms', 'bms.db')
+
     @app.teardown_appcontext
     def close_db(error):
         """在每个线程结束时关闭连接"""
@@ -38,6 +41,7 @@ def create_app():
     app.db_manager = db_manager
 
     # 注册蓝图
+    app.register_blueprint(bms_bp, url_prefix='/bms')
     # app.register_blueprint(login_bp, url_prefix='/login')
     # app.register_blueprint(homepage_bp, url_prefix='/homepage')
     # app.register_blueprint(data_mgmt_bp, url_prefix='/data')

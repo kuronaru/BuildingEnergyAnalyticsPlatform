@@ -32,6 +32,7 @@ class Config:
     # SECRET_KEY = 'your_secret_key'
     # SQLALCHEMY_DATABASE_URI = 'sqlite:///users.db'  # 使用 SQLite 数据库
     SQLALCHEMY_BINDS = {
-        'users': 'sqlite:///users.db'
+        'users': 'sqlite:///users.db',
+        'bms': 'sqlite:///bms.db'
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False

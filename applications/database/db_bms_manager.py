@@ -1,28 +1,24 @@
-from flask import Flask
+from flask import current_app
 from applications.extensions import db
 from applications.models.model_bms import BMSData
+from applications import create_app
 
-app = Flask(__name__)
 class BMSDataManager:
     """BMS 数据管理器，封装数据库操作"""
-    def __init__(self, object_type, object_instance, value):
-        self.object_type = object_type
-        self.object_instance = object_instance
-        self.value = value
     @staticmethod
     def save_data(object_type: str, object_instance: int, value: float) -> bool:
         """存储 BACnet 读取的数据"""
-        with app.app_context():
-            try:
+        try:
+            with current_app.app_context():
                 data_entry = BMSData(object_type=object_type, object_instance=object_instance, value=value)
                 db.session.add(data_entry)
                 db.session.commit()
                 return True
-            except Exception as e:
-                print(f"Error saving BMS data: {e}")
-                return False
-            finally:
-                db.session.close()
+        except Exception as e:
+            print(f"Error saving BMS data: {e}")
+            return False
+        finally:
+            db.session.close()
 
     @staticmethod
     def get_latest_data() -> list:
@@ -37,8 +33,7 @@ class BMSDataManager:
     def clear_old_data(days: int) -> bool:
         """清除 N 天前的数据"""
         try:
-            db.session.query(BMSData).filter(BMSData.timestamp < db.func.date_sub(db.func.current_timestamp(), db.text(
-                f"INTERVAL {days} DAY"))).delete()
+            db.session.query(BMSData).filter(BMSData.timestamp < db.func.date_sub(db.func.current_timestamp(), db.text(f"INTERVAL {days} DAY"))).delete()
             db.session.commit()
             return True
         except Exception as e:

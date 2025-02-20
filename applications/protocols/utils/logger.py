@@ -1,6 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
+# 未测试
 class Logger:
     def __init__(self, log_file="app.log", max_bytes=5 * 1024 * 1024, backup_count=3):
         """

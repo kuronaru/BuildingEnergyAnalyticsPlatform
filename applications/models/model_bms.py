@@ -1,6 +1,7 @@
 from applications.extensions import db
 class BMSData(db.Model):
     """存储 BACnet 读取的数据"""
+    __bind_key__ = 'bms'
     __tablename__ = "bms_data"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)

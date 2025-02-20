@@ -1,30 +1,7 @@
 import BAC0
 import asyncio
 import random
-import time
-
-# Config
-config = {
-    "local_ip": "10.249.156.165",
-    "device_ip": "10.249.156.165",
-    "local_port": 47809,
-    "device_port": 59450,
-    "read_objects": [("analogInput", 0), ("analogInput", 1)],
-    "read_attempts": 3,
-    "read_interval": 60,  # reading intervals/s
-
-    "write_range": (15, 25),
-    "write_object": ("analogValue", 1),  # (object_type, object_instance, value)
-    "write_interval": 3,
-    "dynamic_write": True,
-    "fixed_set_value": 18,
-
-
-    "property_name": "presentValue",
-    "enable_read": True,
-    "enable_write": False,
-}
-
+from config_test import bacnet_config as config
 
 def read_values(bacnet_client):
     for obj_type, obj_instance in config["read_objects"]:
@@ -70,10 +47,10 @@ async def main():
 
             else:
                 set_value = write_value(bacnet_client, dynamic=False)  # Write a fixed value
-                read_values(bacnet_client)  # Read after writing
+                read_values(bacnet_client)
 
     except Exception as e:
         print(f"Error: {str(e)}")
 
 # Run the task
-asyncio.run(main())
+# asyncio.run(main())
