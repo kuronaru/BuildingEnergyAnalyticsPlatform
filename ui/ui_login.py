@@ -117,9 +117,15 @@ class LoginApp(QWidget):
         painter.end()
         self.captcha_label.setPixmap(pixmap)
 
+
+
+
+
+
     def handle_login(self):
         username = self.username_input.text()
         password = self.password_input.text()
+
 
         # 向 Flask 服务发送 POST 请求
         try:
@@ -170,3 +176,7 @@ class LoginApp(QWidget):
         self.ui.setupUi(self.main_window)  # 将 UI 设置到主窗口上
         self.main_window.show()  # 显示主窗口
         self.close()  # 关闭当前登录窗口
+
+
+
+

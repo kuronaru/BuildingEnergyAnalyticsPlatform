@@ -5,7 +5,9 @@ from PyQt5.QtWidgets import QApplication
 
 
 from applications import create_app
-from ui.mainwindow import Ui_Form
+#from ui.mainwindow import Ui_Form
+from ui.connector import Ui_connector
+
 from ui.ui_login import LoginApp
 
 
@@ -26,9 +28,14 @@ if __name__ == '__main__':
 
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     qt_app = QApplication(sys.argv)
-    # main_window = LoginApp()
+    #main_window = LoginApp()
+    """"
     main_window = QtWidgets.QWidget()
     ui = Ui_Form()  # 创建 UI 实例
     ui.setupUi(main_window)  # 将 UI 设置到主窗口上
-    main_window.show()
+    """
+    connector = QtWidgets.QWidget()
+    ui = Ui_connector()  # 创建 UI 实例
+    ui.setupUi(connector)  # 将 UI 设置到主窗口上
+    connector.show()
     sys.exit(qt_app.exec_())
