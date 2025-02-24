@@ -1,14 +1,16 @@
 import csv
+from logging import getLogger
 from threading import Thread
 
 from flask import Blueprint, request, current_app, jsonify
 
 from server_status import SUCCESS, FAILURE
 
-data_mgmt_bp = Blueprint('data_mgmt', __name__)
+db_mgmt_bp = Blueprint('db_mgmt', __name__)
+logger = getLogger(__name__)
 
 
-@data_mgmt_bp.route('/select_database', methods=['POST'])
+@db_mgmt_bp.route('/select_database', methods=['POST'])
 def select_database():
     """
     用户选择当前操作的数据库。
@@ -37,7 +39,7 @@ def select_database():
         return jsonify({'status': FAILURE, 'message': str(e)})
 
 
-@data_mgmt_bp.route('/refresh_database', methods=['GET'])
+@db_mgmt_bp.route('/refresh_database', methods=['GET'])
 def refresh_database():
     """
     刷新显示当前存储的数据库列表。
@@ -55,7 +57,7 @@ def refresh_database():
         return jsonify({'status': FAILURE, 'message': str(e)})
 
 
-@data_mgmt_bp.route('/get_database', methods=['POST'])
+@db_mgmt_bp.route('/get_database', methods=['POST'])
 def get_database():
     """
     显示所选数据库数据或保存到本地文件。
@@ -105,7 +107,7 @@ def async_export_to_csv(database, db_name, limit):
     print(f"Data exported to {file_path}")
 
 
-@data_mgmt_bp.route('/export_database_async', methods=['POST'])
+@db_mgmt_bp.route('/export_database_async', methods=['POST'])
 def export_database_async():
     """
     启用异步导出数据库数据到 CSV 文件。
@@ -126,7 +128,7 @@ def export_database_async():
         return jsonify({'status': FAILURE, 'message': str(e)})
 
 
-@data_mgmt_bp.route('/switch_database', methods=['POST'])
+@db_mgmt_bp.route('/switch_database', methods=['POST'])
 def switch_database():
     """
     切换访问的数据库。

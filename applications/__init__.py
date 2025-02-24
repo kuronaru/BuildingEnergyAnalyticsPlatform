@@ -4,16 +4,16 @@ from flask_login import LoginManager
 
 from applications.database.db_user_manager import UserManager
 from applications.extensions import db
-from applications.services.sv_data_mgmt import data_mgmt_bp
-from applications.services.sv_homepage import homepage_bp
-from applications.services.sv_login import login_bp
-from applications.services.sv_machine_learning import ml_bp
-from applications.services.sv_sensor import sensor_bp
-from applications.services.sv_visualization import viz_bp
+from applications.routes.db_mgmt_route import db_mgmt_bp
+from applications.routes.homepage_route import homepage_bp
+from applications.routes.login_route import login_bp
+from applications.routes.machine_learning_route import ml_bp
+from applications.routes.sensor_route import sensor_bp
+from applications.routes.visualize_route import viz_bp
 from applications.utils.database_manager import DatabaseManager
 from applications.utils.thread_pool_manager import ThreadPoolManager
-from applications.services.sv_bms_integration import bms_bp
-from logging_config import setup_logger
+from applications.routes.bms_route import bms_bp
+from logging_config import setup_logger, initialize_all_loggers
 
 
 def create_app():
@@ -24,6 +24,7 @@ def create_app():
 
     # 初始化全局日志
     app_logger = setup_logger('app', app.config)
+    initialize_all_loggers('./', app.config)
     app_logger.info("Initializing Flask application...")
 
     # 初始化Bcrypt
@@ -83,12 +84,9 @@ def create_app():
         ThreadPoolManager.shutdown()
 
     # 注册蓝图并初始化模块日志
-    blueprints = [login_bp, homepage_bp, data_mgmt_bp, sensor_bp, ml_bp, viz_bp, bms_bp]
-    url_prefix = ['/', '/homepage', '/data', '/sensor', '/ml', '/viz', '/bms']
+    blueprints = [login_bp, homepage_bp, db_mgmt_bp, sensor_bp, ml_bp, viz_bp, bms_bp]
+    url_prefix = ['/', '/homepage', '/db', '/sensor', '/ml', '/viz', '/bms']
     for bp in blueprints:
-        module_name = bp.import_name
-        setup_logger(module_name, app.config)
-        app_logger.info(f"Logger initialized for blueprint: {module_name}")
         app.register_blueprint(bp, url_prefix=url_prefix.pop(0))
 
     app_logger.info("Flask app created and initialized")

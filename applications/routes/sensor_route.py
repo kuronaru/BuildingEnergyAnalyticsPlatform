@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from flask import Blueprint, request, jsonify
 from threading import Thread, Event
 import time
@@ -7,6 +9,7 @@ from applications.models.model_sensor import SensorModel
 from server_status import SUCCESS, FAILURE
 
 sensor_bp = Blueprint('sensor', __name__)
+logger = getLogger(__name__)
 
 # 全局变量控制传感器数据接收线程
 receive_thread_stop_event = Event()

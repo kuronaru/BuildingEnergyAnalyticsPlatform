@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from flask import Blueprint, request, jsonify
+from flask_login import logout_user
 
 from applications.database.db_user_manager import UserManager
 from applications.models.model_bms import BMSModel
@@ -54,20 +55,13 @@ def get_sensor_info():
         return jsonify({'status': FAILURE, 'data': None})
 
 
-def logout_user(username):
-    return True
-
-
 @homepage_bp.route('/logout', methods=['POST'])
 def logout():
     """
     功能：注销并退出登录
     """
-    data = request.get_json()
-    username = data.get('username')
-
     # 断开各个连接，退出登录
-    result = logout_user(username)
+    result = logout_user()
     if result:
         return jsonify({'status': SUCCESS, 'message': 'User logged out successfully'})
     else:
