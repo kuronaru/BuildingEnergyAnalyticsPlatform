@@ -26,7 +26,7 @@ class BMSIntegrationApp(QWidget):
         self.ip_label.setFont(QFont("Arial", 10))
         self.ip_input = QLineEdit()
         self.ip_input.setPlaceholderText("Enter BMS Server IP (e.g., 192.168.0.1)")
-        self.ip_input.setText("10.249.156.165")
+        self.ip_input.setText("10.249.202.90")
         layout.addWidget(self.ip_label)
         layout.addWidget(self.ip_input)
 
@@ -157,14 +157,14 @@ class BMSIntegrationApp(QWidget):
             return
 
         db_name = "bms.db"
-        save_data = False
+        save_data = True
 
         action = "start"
 
         try:
             # 向后端发送读取数据请求
             response = requests.post(
-                'http://127.0.0.1:5000/bms/get_bms_data',
+                'http://127.0.0.1:5000/bms/receive_data',
                 json={
                     'action': action,
                     'save_data': save_data,

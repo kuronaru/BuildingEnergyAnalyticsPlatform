@@ -1,3 +1,4 @@
+import importlib
 import logging
 import os
 from functools import wraps
@@ -63,3 +64,22 @@ def with_logger(func):
         return func(logger, *args, **kwargs)
 
     return wrapper
+
+
+def initialize_all_loggers(directory: str, app_config):
+    """
+    遍历目录下的所有 Python 模块，初始化日志
+    :param directory: 项目目录路径
+    :param app_config: Flask 配置对象
+    """
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith(".py") and file != "__init__.py":
+                module_path = os.path.join(root, file)
+                module_name = module_path.replace(directory, "").replace("/", ".").replace("\\", ".").strip(".py")
+                try:
+                    module = importlib.import_module(module_name)
+                    setup_logger(module_name, app_config)
+                except Exception as e:
+                    print(f"Failed to initialize logger for {module_name}: {e}")
+

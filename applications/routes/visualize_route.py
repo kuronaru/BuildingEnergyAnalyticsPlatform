@@ -1,9 +1,11 @@
+from logging import getLogger
+
 from flask import Blueprint, jsonify, request, current_app
 
 from server_status import SUCCESS, FAILURE
 
 viz_bp = Blueprint('visualization', __name__)
-
+logger = getLogger(__name__)
 
 @viz_bp.route('/get_table_list', methods=['GET'])
 def get_table_list():

@@ -1,7 +1,6 @@
 from flask import current_app
 from applications.extensions import db
 from applications.models.model_bms import BMSData
-from applications import create_app
 
 class BMSDataManager:
     """BMS 数据管理器，封装数据库操作"""

@@ -10,7 +10,7 @@ from ui.connector import Ui_connector
 
 from ui.ui_login import LoginApp
 
-from ui.bms_integration import BMSIntegrationApp
+from ui.test_bms_ui import BMSIntegrationApp
 
 def start_flask():
     app = create_app()
@@ -37,7 +37,10 @@ if __name__ == '__main__':
     connector = QtWidgets.QWidget()
     ui = Ui_connector()  # 创建 UI 实例
     ui.setupUi(connector)  # 将 UI 设置到主窗口上
-    connector.show()
-    main_window = BMSIntegrationApp()
-    main_window.show()
+    # connector.show()
+    # ui = Ui_Form()  # 创建 UI 实例
+    # ui.setupUi(main_window)  # 将 UI 设置到主窗口上
+    bms_window = BMSIntegrationApp()
+    # main_window.show()
+    bms_window.show()
     sys.exit(qt_app.exec_())

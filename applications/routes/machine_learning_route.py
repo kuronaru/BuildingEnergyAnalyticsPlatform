@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from flask import Blueprint, request, jsonify
 import os
 import shutil
@@ -11,6 +13,8 @@ from applications.models.model_ml import MLModel
 from server_status import SUCCESS, FAILURE
 
 ml_bp = Blueprint("ml", __name__)
+logger = getLogger(__name__)
+
 inference_tasks = {}  # 全局保存异步推理任务：task_id -> {status, result}
 
 
