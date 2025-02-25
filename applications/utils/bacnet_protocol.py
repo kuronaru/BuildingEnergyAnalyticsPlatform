@@ -13,6 +13,7 @@ bacnet_client: Optional[BAC0.scripts.Lite.Lite] = None
 def read_property_request(request_properties):
     ip = request_properties.get('device_ip')
     port = request_properties.get('device_port')
+    device_port = request_properties.get('device_port')
     object_type = request_properties.get('object_type')
     object_instance = request_properties.get('object_instance')
     property_name = request_properties.get('property_name')

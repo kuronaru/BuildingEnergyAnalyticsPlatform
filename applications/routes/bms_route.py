@@ -64,13 +64,15 @@ def receive_data():
     data = request.get_json()
     action = data.get('action')  # 'start' or 'stop'
     ip = data.get('ip')  # 服务器IP
-    port = data.get('port')  # 服务器端口
+    port = data.get('server_port')  # 服务器端口
+    device_port = data.get('device_port') # 设备端口
     object_instance = data.get('object_instance')
     interval = data.get('interval')
 
     read_properties = {
         "device_ip": ip,
-        "device_port": port,
+        "server_port": port,
+        "device_port": device_port,
         "object_type": "analogInput",
         "object_instance": object_instance,
         "property_name": "presentValue",

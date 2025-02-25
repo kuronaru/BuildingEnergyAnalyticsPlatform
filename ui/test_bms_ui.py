@@ -26,7 +26,7 @@ class BMSIntegrationApp(QWidget):
         self.ip_label.setFont(QFont("Arial", 10))
         self.ip_input = QLineEdit()
         self.ip_input.setPlaceholderText("Enter BMS Server IP (e.g., 192.168.0.1)")
-        self.ip_input.setText("10.249.202.90")
+        self.ip_input.setText("1.1.1.115")
         layout.addWidget(self.ip_label)
         layout.addWidget(self.ip_input)
 
@@ -38,6 +38,24 @@ class BMSIntegrationApp(QWidget):
         self.port_input.setText("47809")
         layout.addWidget(self.port_label)
         layout.addWidget(self.port_input)
+
+        # 设备端口 输入框
+        self.device_port_label = QLabel('Device Port:')
+        self.device_port_label.setFont(QFont("Arial", 10))
+        self.device_port_input = QLineEdit()
+        self.device_port_input.setPlaceholderText("Enter Device Port (e.g., 59194)")
+        self.device_port_input.setText("59194")
+        layout.addWidget(self.device_port_label)
+        layout.addWidget(self.device_port_input)
+
+        # 实例号 输入框
+        self.object_instance_label = QLabel('Object Instance:')
+        self.object_instance_label.setFont(QFont("Arial", 10))
+        self.object_instance_input = QLineEdit()
+        self.object_instance_input.setPlaceholderText("Enter Object Instance (e.g., 0)")
+        self.object_instance_input.setText("0")
+        layout.addWidget(self.object_instance_label)
+        layout.addWidget(self.object_instance_input)
 
         # 按钮布局
         button_layout = QHBoxLayout()
@@ -151,6 +169,8 @@ class BMSIntegrationApp(QWidget):
         """ 处理读取数据操作 """
         ip = self.ip_input.text().strip()
         port = self.port_input.text().strip()
+        device_port = self.port_input.text().strip()
+        object_instance = self.object_instance_input.text().strip()
 
         if not ip or not port:
             QMessageBox.warning(self, 'Input Error', 'Please provide both IP and Port.')
@@ -170,7 +190,9 @@ class BMSIntegrationApp(QWidget):
                     'save_data': save_data,
                     'db_name': db_name,
                     'ip': ip,
-                    'port': port
+                    'server_port': port,
+                    'device_port': device_port,
+                    'object_instance': object_instance
                 }
             )
             result = response.json()
