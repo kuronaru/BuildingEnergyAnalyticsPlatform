@@ -27,7 +27,7 @@ def setup_logger(module_name, config=None, log_dir='logs'):
         )
     else:
         # 使用默认日志级别
-        console_level = file_level = logging.INFO
+        console_level = file_level = logging.DEBUG
 
     # 创建 logger 对象（模块名称）
     logger = logging.getLogger(module_name)

@@ -4,6 +4,7 @@ from flask_login import LoginManager
 
 from applications.database.db_user_manager import UserManager
 from applications.extensions import db
+from applications.routes.bms_route import bms_bp
 from applications.routes.db_mgmt_route import db_mgmt_bp
 from applications.routes.homepage_route import homepage_bp
 from applications.routes.login_route import login_bp
@@ -12,7 +13,6 @@ from applications.routes.sensor_route import sensor_bp
 from applications.routes.visualize_route import viz_bp
 from applications.utils.database_manager import DatabaseManager
 from applications.utils.thread_pool_manager import ThreadPoolManager
-from applications.routes.bms_route import bms_bp
 from logging_config import setup_logger, initialize_all_loggers
 
 
@@ -74,14 +74,14 @@ def create_app():
     # 初始化线程池
     # 通过配置文件设置最大工作线程数，默认 5 个线程
     max_workers = app.config.get("THREAD_POOL_MAX_WORKERS", 5)
-    ThreadPoolManager.initialize(max_workers)
+    ThreadPoolManager.initialize(max_workers, app)
     app.thread_pool = ThreadPoolManager  # 将线程池管理器绑定到 app 上
     app_logger.debug(f"ThreadPoolManager initialized with max workers: {max_workers}")
 
-    @app.teardown_appcontext
-    def shutdown_thread_pool(error):
-        """在 Flask 应用线程结束时关闭线程池"""
-        ThreadPoolManager.shutdown()
+    # @app.teardown_appcontext
+    # def shutdown_thread_pool(error):
+    #     """在 Flask 应用线程结束时关闭线程池"""
+    #     ThreadPoolManager.shutdown()
 
     # 注册蓝图并初始化模块日志
     blueprints = [login_bp, homepage_bp, db_mgmt_bp, sensor_bp, ml_bp, viz_bp, bms_bp]

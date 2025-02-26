@@ -5,18 +5,17 @@ from logging import getLogger
 
 from applications.database.db_bms_manager import BMSDataManager
 from applications.utils.bacnet_protocol import async_connect, async_disconnect, \
-    get_object_list, async_read
+    async_read
 from applications.utils.thread_pool_manager import ThreadPoolManager
 
 logger = getLogger(__name__)
 
 
-def connect_to_bms(ip, port=47808):
+def connect_to_bms(ip, port):
     async def main_task():
         try:
             # 按顺序运行异步任务
             await async_connect(ip, port)
-            await get_object_list()
             return True
         except Exception as e:
             logger.info(f"Error during BACnet connection: {str(e)}")
@@ -37,7 +36,7 @@ def disconnect_from_bms(ip, port):
         return False
 
 
-def receive_data_loop(request_properties, interval, stop_event=None):
+def receive_data_loop(request_properties, interval, stop_event=None, app=None):
     """
     同步循环：调用异步读取 BACnet 数据，并处理结果。
     """
@@ -50,8 +49,9 @@ def receive_data_loop(request_properties, interval, stop_event=None):
                 # 数据库存储
                 object_type = request_properties.get("object_type")
                 object_instance = request_properties.get("object_instance")
-                BMSDataManager.save_data(object_type, object_instance, result)
-                logger.debug(f"Saved BMS data to database")
+                with app.app_context():
+                    BMSDataManager.save_data(object_type, object_instance, result)
+                    logger.debug(f"Saved BMS data to database")
             else:
                 # 超时或错误情况下，跳过该次操作
                 logger.warning("No valid data received. Skipping this cycle.")
@@ -65,7 +65,7 @@ def receive_data_loop(request_properties, interval, stop_event=None):
 def start_receive_data_thread(read_properties, interval=10, stop_event=None):
     try:
         future = ThreadPoolManager.submit_task(
-            func=receive_data_loop, args=(read_properties, interval, stop_event,))
+            receive_data_loop, read_properties, interval, stop_event=stop_event)
         logger.info(f"Started receive data thread with interval: {interval}s")
         return future
     except Exception as e:

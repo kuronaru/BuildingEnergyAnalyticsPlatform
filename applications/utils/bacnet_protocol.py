@@ -50,7 +50,7 @@ async def async_read(request_properties, timeout=3):
     request = read_property_request(request_properties)
     try:
         # 使用 asyncio.wait_for 为读取操作添加超时控制
-        return await asyncio.wait_for(bacnet_client.read(request), timeout=timeout)
+        return bacnet_client.read(request, timeout=timeout)
     except asyncio.TimeoutError:
         # 超时处理逻辑，可以选择记录日志并返回一个特定值
         logger.warning(f"Read timeout for request: {request}")
@@ -89,10 +89,10 @@ async def async_connect(ip, port):
     global bacnet_client
     try:
         bacnet_client = BAC0.lite(ip, port)
-        logger.info(f"Connected to BACnet device at {ip}:{port}")
+        logger.info(f"BACnet client created at {ip}:{port}")
         return True
     except Exception as e:
-        logger.error(f"Failed to connect to BACnet device: {e}")
+        logger.error(f"Failed to create BACnet client: {e}")
         return False
 
 

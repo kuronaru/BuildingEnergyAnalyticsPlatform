@@ -1,18 +1,16 @@
-from flask import current_app
 from applications.extensions import db
 from applications.models.model_bms import BMSData
 
 class BMSDataManager:
     """BMS 数据管理器，封装数据库操作"""
     @staticmethod
-    def save_data(object_type: str, object_instance: int, value: float) -> bool:
+    def save_data(object_type: str, object_instance: int, value: float):
         """存储 BACnet 读取的数据"""
         try:
-            with current_app.app_context():
-                data_entry = BMSData(object_type=object_type, object_instance=object_instance, value=value)
-                db.session.add(data_entry)
-                db.session.commit()
-                return True
+            data_entry = BMSData(object_type=object_type, object_instance=object_instance, value=value)
+            db.session.add(data_entry)
+            db.session.commit()
+            return True
         except Exception as e:
             print(f"Error saving BMS data: {e}")
             return False

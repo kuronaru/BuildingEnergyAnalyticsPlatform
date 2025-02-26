@@ -1,6 +1,6 @@
+import threading
 from concurrent.futures import ThreadPoolExecutor, Future, as_completed
 from typing import Callable, Any, Dict, Optional, List
-import threading
 
 
 class ThreadPoolManager:
@@ -12,6 +12,7 @@ class ThreadPoolManager:
     _executor: Optional[ThreadPoolExecutor] = None
     _lock = threading.Lock()  # 确保线程池的线程安全
     _task_events: Dict[Future, threading.Event] = {}  # 存储每个任务的 Future 与对应的 stop_event 映射
+    _app_context = None
 
     @staticmethod
     def _init_pool(max_workers: int):
@@ -24,11 +25,12 @@ class ThreadPoolManager:
                 print(f"线程池初始化完成，最大线程数：{max_workers}")
 
     @staticmethod
-    def initialize(max_workers: int = 5):
+    def initialize(max_workers: int = 5, app=None):
         """
         初始化线程池（懒加载方法）
         """
         ThreadPoolManager._init_pool(max_workers)
+        ThreadPoolManager._app_context = app
 
     @staticmethod
     def submit_task(func: Callable, *args, **kwargs) -> Future:
@@ -41,7 +43,7 @@ class ThreadPoolManager:
         # 为任务创建独立的 stop_event
         stop_event = threading.Event()
         kwargs['stop_event'] = stop_event  # 将 stop_event 作为任务的参数传入
-
+        kwargs['app'] = ThreadPoolManager._app_context
         # 提交任务
         future = ThreadPoolManager._executor.submit(func, *args, **kwargs)
 
@@ -64,7 +66,7 @@ class ThreadPoolManager:
             print("任务不存在，无法触发停止事件。")
 
     @staticmethod
-    def shutdown(wait: bool = True):
+    def shutdown(wait: bool = True) -> None:
         """
         关闭线程池并清理所有任务及其 stop_event
         """
