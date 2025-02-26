@@ -169,7 +169,7 @@ class BMSIntegrationApp(QWidget):
         """ 处理读取数据操作 """
         ip = self.ip_input.text().strip()
         port = self.port_input.text().strip()
-        device_port = self.port_input.text().strip()
+        device_port = self.device_port_input.text().strip()
         object_instance = self.object_instance_input.text().strip()
 
         if not ip or not port:
@@ -192,7 +192,8 @@ class BMSIntegrationApp(QWidget):
                     'ip': ip,
                     'server_port': port,
                     'device_port': device_port,
-                    'object_instance': object_instance
+                    'object_instance': object_instance,
+                    'interval': 1
                 }
             )
             result = response.json()
