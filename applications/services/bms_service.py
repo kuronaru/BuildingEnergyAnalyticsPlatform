@@ -114,7 +114,7 @@ def get_device_objects_service(device_id):
             BMSData.object_type, BMSData.object_instance
         ).filter(
             BMSData.device_id == device_id
-        ).all()
+        ).distinct().all()
 
         # 格式化数据
         results = [

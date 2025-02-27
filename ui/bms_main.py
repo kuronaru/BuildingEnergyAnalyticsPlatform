@@ -2,8 +2,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from PyQt5.QtGui import QPixmap, QColor, QPen
 from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidget, QCheckBox, QWidget, QHBoxLayout, QGraphicsScene, \
     QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsTextItem
-
-
+from PyQt5.QtCore import QSettings
+import requests
+from server_status import SUCCESS
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 class Ui_main(object):
     def setupUi(self, main):
         main.setObjectName("main")
@@ -31,9 +33,13 @@ class Ui_main(object):
         self.tree.setHeaderLabels(['Key'])
         self.tree.setHeaderHidden(True)
         root = QTreeWidgetItem(self.tree)
-        root.setText(0, 'Udp:47808')
+        port = load_port()
+
+        root.setText(0, 'UDP:'+str(port))  # 确保是字符串
         child1 = QTreeWidgetItem(root)
-        child1.setText(0, 'RoomController')
+        ip=load_ip()
+
+        child1.setText(0, ip)
         self.tree.itemDoubleClicked.connect(self.on_item_double_clicked)
 
         self.Objects = QtWidgets.QLabel(main)
@@ -116,15 +122,51 @@ class Ui_main(object):
         self.Log.setText(_translate("main", "Log"))
 
     def on_item_double_clicked(self,item):
-        if item.text(0) == 'RoomController':
+        device_id=load_device_id()
+        ip=load_ip()
+        text = item.text(0)
+        if text == ip:
             if self.treeView.isColumnHidden(0):
-               self.treeView.setColumnHidden(0,False)
-               root_item = QTreeWidgetItem(self.treeView, ["RoomController"])
-               self.treeView.addTopLevelItem(QTreeWidgetItem(root_item, ["Temperature.Indoor (AI:0)"]))
-               self.treeView.addTopLevelItem(QTreeWidgetItem(root_item, ["Temperature.Water (AI:1)"]))
-               self.treeView.addTopLevelItem(QTreeWidgetItem(root_item, ["Temperature.Outdoor (AI:2)"]))
+                try:
+                    # 向后端发送连接请求
+                    response = requests.get(
+                        'http://127.0.0.1:5000/bms/device_objects',
+                        json={'device_id':device_id}
+                    )
+                    result = response.json()
+
+                    # if result['status'] == SUCCESS:
+                    #     QMessageBox.information(self, 'Success', result['message'])
+                    # else:
+                    #     QMessageBox.warning(self, 'Error', result['message'])
+                except requests.ConnectionError:
+                    QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
+
+
+                device_id = result['device_id']
+
+
+                # 遍历 objects 列表
+                for obj in result['objects']:
+                    instance = obj.get('object_instance', None)
+                    obj_type = obj.get('object_type', None)
+
+
+                self.treeView.setColumnHidden(0,False)
+                root_item = QTreeWidgetItem(self.treeView, [str(device_id)])
+                self.treeView.addTopLevelItem(QTreeWidgetItem(root_item, [str(obj_type)+':'+str(instance)]))
+
             else:
                 return
+        elif ":" in text:
+            obj_type, instance = text.split(":", 1)
+            if obj_type == "analogInput" and instance == "0":
+                print(1)
+            elif obj_type == "analogOutput" and instance == "1":
+                print(2)
+
+
+        """""
         elif item.text(0) == 'Temperature.Indoor (AI:0)':
             row = self.tableWidget.rowCount()
             self.tableWidget.insertRow(row)
@@ -136,6 +178,7 @@ class Ui_main(object):
             self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem("20"))
             self.tableWidget.setItem(row, 6, QtWidgets.QTableWidgetItem("17:00:00"))
             self.tableWidget.setItem(row, 7, QtWidgets.QTableWidgetItem("OK"))
+        """
 
     def setup_checkbox(self, table_widget, row1, column):
         widget = QWidget()  # 方法内的局部变量，每次调用都是新的副本，所以才能单独让每个tablewidget的勾选框独立连接信号
@@ -226,6 +269,24 @@ class Ui_main(object):
     def clear_image(self):
         # 清除当前图像
         self.graphicsView.setScene(None)
+
+
+def load_port():
+    """ 读取 QSettings 里的端口，确保返回字符串 """
+    settings = QSettings("MyCompany", "BMSApp")
+    port = settings.value("port", "12345")  # 读取端口，默认值 12345
+    return str(port)  # 确保返回的是字符串
+
+def load_ip():
+    settings = QSettings("MyCompany", "BMSApp")
+    ip = settings.value("ip", "1.1")  # 读取端口，默认值 12345
+    return str(ip)  # 确保返回的是字符串
+
+def load_device_id():
+    settings = QSettings("MyCompany", "BMSApp")
+    device_id = settings.value("device_id", "1.1")  # 读取端口，默认值 12345
+    return str(device_id)  # 确保返回的是字符串
+
 
 
 

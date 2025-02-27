@@ -1,14 +1,12 @@
-import requests
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import  QPushButton, QVBoxLayout, \
-    QLabel, QLineEdit, QHBoxLayout, QMessageBox
-
+from PyQt5.QtCore import Qt
+import requests
 from server_status import SUCCESS
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QSettings
 
-
-
+settings = QSettings("MyCompany", "BMSApp")
 class BMSIntegrationApp(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -28,16 +26,16 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         # IP 输入框
         self.ip_label = QLabel('BMS Server IP:')
         self.ip_label.setFont(QFont("Arial", 10))
-        self.ip_input = QLineEdit()
+        self.ip_input = QLineEdit(self)
         self.ip_input.setPlaceholderText("Enter BMS Server IP (e.g., 192.168.0.1)")
-        self.ip_input.setText("1.1.1.115")
+        self.ip_input.setText("10.249.163.101")
         layout.addWidget(self.ip_label)
         layout.addWidget(self.ip_input)
 
         # 端口 输入框
         self.port_label = QLabel('BMS Server Port:')
         self.port_label.setFont(QFont("Arial", 10))
-        self.port_input = QLineEdit()
+        self.port_input = QLineEdit(self)
         self.port_input.setPlaceholderText("Enter BMS Server Port (e.g., 47808)")
         self.port_input.setText("47809")
         layout.addWidget(self.port_label)
@@ -48,7 +46,7 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         self.device_port_label.setFont(QFont("Arial", 10))
         self.device_port_input = QLineEdit()
         self.device_port_input.setPlaceholderText("Enter Device Port (e.g., 59194)")
-        self.device_port_input.setText("60358")
+        self.device_port_input.setText("61636")
         layout.addWidget(self.device_port_label)
         layout.addWidget(self.device_port_input)
 
@@ -80,6 +78,7 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         self.read_button = QPushButton('Read Data')
         self.read_button.setFont(QFont("Arial", 11, QFont.Bold))
         self.read_button.clicked.connect(self.handle_read_data)
+        self.read_button.clicked.connect(self.save_setting)
         self.read_button.clicked.connect(self.goto_bms_main)
         button_layout.addWidget(self.read_button)
 
@@ -122,12 +121,30 @@ class BMSIntegrationApp(QtWidgets.QWidget):
             }
         """)
 
+    def save_setting(self):
+        port = self.port_input.text().strip()
+        settings.setValue("port", port)  # 存入 QSettings
+        ip = self.ip_input.text().strip()
+        settings.setValue("ip", ip)  # 存入 QSettings
+        device_id='RoomSimulator'
+        settings.setValue("device_id",device_id)
+        settings.sync()
+
+
     def goto_bms_main(self):
-        from ui.bms_main import Ui_main  # 这里重新导入
-        self.bms_main = QtWidgets.QWidget()  # QMainWindow 而不是 QWidget
-        self.ui = Ui_main()
-        self.ui.setupUi(self.bms_main)
-        self.bms_main.show()
+        try:
+            from ui.bms_main import Ui_main  # 这里重新导入
+
+            self.bms_main = QtWidgets.QWidget()  # 使用 QMainWindow，而不是 QWidget
+            self.ui = Ui_main()
+            self.ui.setupUi(self.bms_main)
+            self.bms_main.show()
+
+        except ImportError as e:
+            QMessageBox.critical(self, "Error", f"Failed to import UI: {e}")
+
+        except AttributeError as e:
+            QMessageBox.critical(self, "Error", f"UI setup error: {e}")
 
     def handle_connect(self):
         """ 处理连接操作 """
@@ -202,8 +219,8 @@ class BMSIntegrationApp(QtWidgets.QWidget):
                     'action': action,
                     'save_data': save_data,
                     'db_name': db_name,
-                    'device_id': device_id,
                     'ip': ip,
+                    'device_id':device_id,
                     'server_port': port,
                     'device_port': device_port,
                     'object_instance': object_instance,

@@ -148,7 +148,8 @@ def get_device_objects():
     """
     try:
         # 获取前端传递的 device_id 参数
-        device_id = request.args.get('device_id', type=int)
+        data = request.get_json()
+        device_id = data.get('device_id')
         if device_id is None:
             return jsonify({"error": "Device ID is required"}), 400
 
