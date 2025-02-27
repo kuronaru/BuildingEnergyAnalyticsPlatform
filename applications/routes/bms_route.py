@@ -2,13 +2,18 @@ import socket
 from logging import getLogger
 
 from flask import Blueprint, request, jsonify
+from flask_socketio import SocketIO
+from marshmallow.utils import timestamp
+
+from applications.database.db_bms_manager import BMSDataManager
 
 from applications.services.bms_service import connect_to_bms, disconnect_from_bms, start_receive_data_thread, \
-    generate_object_key_with_hash, stop_receive_data_thread
+    generate_object_key_with_hash, stop_receive_data_thread, get_device_objects_service, get_device_latest_data
 from server_status import SUCCESS, FAILURE
 
 bms_bp = Blueprint('bms', __name__)
 logger = getLogger(__name__)
+socketio = SocketIO()
 receive_task_futures = {}
 
 
@@ -63,6 +68,7 @@ def receive_data():
     """
     data = request.get_json()
     action = data.get('action')  # 'start' or 'stop'
+    device_id = data.get('device_id') # 设备号
     ip = data.get('ip')  # 服务器IP
     port = data.get('server_port')  # 服务器端口
     device_port = data.get('device_port') # 设备端口
@@ -70,6 +76,7 @@ def receive_data():
     interval = data.get('interval')
 
     read_properties = {
+        "device_id": device_id,
         "device_ip": ip,
         "server_port": port,
         "device_port": device_port,
@@ -133,4 +140,68 @@ def receive_data():
 
     else:
         return jsonify({'status': FAILURE, 'message': "Invalid action. Only 'start' or 'stop' is allowed."})
+
+@bms_bp.route('/device_objects', methods=['GET'])
+def get_device_objects():
+    """
+    获取指定 device_id 下的所有 object_type 和 object_instance
+    """
+    try:
+        # 获取前端传递的 device_id 参数
+        device_id = request.args.get('device_id', type=int)
+        if device_id is None:
+            return jsonify({"error": "Device ID is required"}), 400
+
+        # 调用服务方法获取对象信息
+        objects = get_device_objects_service(device_id)
+
+        # 结果为空时返回 404
+        if not objects:
+            return jsonify({"message": f"No objects found for device_id {device_id}"}), 404
+
+        # 返回查询结果
+        return jsonify({"device_id": device_id, "objects": objects}), 200
+
+    except Exception as e:
+        logger.error(f"Error handling /device_objects request: {str(e)}")
+        return jsonify({"error": "An error occurred while processing your request"}), 500
+
+
+@bms_bp.route('/get_object_data', methods=['POST'])
+def get_object_data():
+    """
+    前端点击某个 object 后，后端推送最新数据
+    """
+    try:
+        # 获取前端发送的参数
+        data = request.get_json()
+        device_id = data.get('device_id')
+        object_type = data.get('object_type')
+        object_instance = data.get('object_instance')
+
+        if not (device_id and object_type and object_instance):
+            return jsonify({"error": "Missing required parameters"}), 400
+
+        # 调用服务层获取最新数据
+        latest_data = get_device_latest_data(device_id, object_type, object_instance, timestamp)
+
+        if not latest_data:
+            return jsonify({"error": "No data found"}), 404
+
+        # 使用 WebSocket 推送数据到前端
+        socketio.emit(
+            'update_object_data',
+            {
+                "device_id": device_id,
+                "object_type": object_type,
+                "object_instance": object_instance,
+                "latest_data": latest_data,
+            }
+        )
+
+        return jsonify({"message": "Data successfully pushed to front-end"}), 200
+
+    except Exception as e:
+        logger.error(f"Error in object_click route: {e}")
+        return jsonify({"error": "An error occurred while processing your request"}), 500
 

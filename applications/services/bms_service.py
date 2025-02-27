@@ -4,6 +4,8 @@ from hashlib import md5
 from logging import getLogger
 
 from applications.database.db_bms_manager import BMSDataManager
+from applications.models.model_bms import BMSData
+from applications.extensions import db
 from applications.utils.bacnet_protocol import async_connect, async_disconnect, \
     async_read
 from applications.utils.thread_pool_manager import ThreadPoolManager
@@ -47,10 +49,11 @@ def receive_data_loop(request_properties, interval, stop_event=None, app=None):
             if result:
                 logger.debug(f"Received BMS data: {result}")
                 # 数据库存储
+                device_id = request_properties.get("device_id")
                 object_type = request_properties.get("object_type")
                 object_instance = request_properties.get("object_instance")
                 with app.app_context():
-                    BMSDataManager.save_data(object_type, object_instance, result)
+                    BMSDataManager.save_data(device_id, object_type, object_instance, result)
                     logger.debug(f"Saved BMS data to database")
             else:
                 # 超时或错误情况下，跳过该次操作
@@ -100,4 +103,48 @@ def generate_object_key_with_hash(read_properties):
     property_name = read_properties.get("property_name")
     identifier = f"{ip}:{port}_{object_type}_{object_instance}_{property_name}"
     return md5(identifier.encode()).hexdigest()
+
+def get_device_objects_service(device_id):
+    """
+    查询指定 device_id 下的所有 object_type 和 object_instance
+    """
+    try:
+        # 从数据库中查询与 device_id 相关的记录
+        objects = db.session.query(
+            BMSData.object_type, BMSData.object_instance
+        ).filter(
+            BMSData.device_id == device_id
+        ).all()
+
+        # 格式化数据
+        results = [
+            {"object_type": obj.object_type, "object_instance": obj.object_instance}
+            for obj in objects
+        ]
+
+        return results
+
+    except Exception as e:
+        logger.error(f"Error in get_device_objects_service: {str(e)}")
+        raise e
+
+def get_device_latest_data(device_id, object_type, object_instance):
+    """
+        获取指定 object 的最新数据
+        """
+    try:
+        latest_data = BMSDataManager.get_latest_data(device_id, object_type, object_instance)
+
+        if latest_data:
+            return latest_data
+        else:
+            logger.warning(
+                f"No data found for device_id={device_id}, object_type={object_type}, object_instance={object_instance}")
+            return None
+
+    except Exception as e:
+        logger.error(f"Error in get_object_data_service: {str(e)}")
+        raise e
+
+
 

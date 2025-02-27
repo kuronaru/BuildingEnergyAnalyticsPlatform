@@ -8,6 +8,7 @@ class BMSData(db.Model):
     __tablename__ = "bms_data"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    device_id = db.Column(db.Integer, nullable=False)
     object_type = db.Column(db.String(50), nullable=False)
     object_instance = db.Column(db.Integer, nullable=False)
     value = db.Column(db.Float, nullable=False)
