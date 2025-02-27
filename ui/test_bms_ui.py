@@ -3,6 +3,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 import requests
 from server_status import SUCCESS
+from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 
 class BMSIntegrationApp(QWidget):
@@ -76,6 +78,7 @@ class BMSIntegrationApp(QWidget):
         self.read_button = QPushButton('Read Data')
         self.read_button.setFont(QFont("Arial", 11, QFont.Bold))
         self.read_button.clicked.connect(self.handle_read_data)
+        self.read_button.clicked.connect(self.goto_bms_main)
         button_layout.addWidget(self.read_button)
 
         layout.addLayout(button_layout)
@@ -116,6 +119,13 @@ class BMSIntegrationApp(QWidget):
                 color: #ccc;
             }
         """)
+
+    def goto_bms_main(self):
+        from ui.bms_main import Ui_main  # 这里重新导入
+        self.bms_main = QtWidgets.QWidget()  # QMainWindow 而不是 QWidget
+        self.ui = Ui_main()
+        self.ui.setupUi(self.bms_main)
+        self.bms_main.show()
 
     def handle_connect(self):
         """ 处理连接操作 """
@@ -205,3 +215,5 @@ class BMSIntegrationApp(QWidget):
                 QMessageBox.warning(self, 'Error', result['message'])
         except requests.ConnectionError:
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
+
+
