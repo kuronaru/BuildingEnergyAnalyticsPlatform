@@ -1,12 +1,16 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
-from PyQt5.QtGui import QFont
-from PyQt5.QtCore import Qt
 import requests
-from server_status import SUCCESS
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtWidgets
 from PyQt5.QtCore import QSettings
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
+
+from applications.database.db_bms_manager import BMSDataManager
+from server_status import SUCCESS
 
 settings = QSettings("MyCompany", "BMSApp")
+
+
 class BMSIntegrationApp(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
@@ -23,20 +27,20 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         self.title.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.title)
 
-        # IP 输入框
-        self.ip_label = QLabel('BMS Server IP:')
+        # 设备IP 输入框
+        self.ip_label = QLabel('BMS Device IP:')
         self.ip_label.setFont(QFont("Arial", 10))
         self.ip_input = QLineEdit(self)
-        self.ip_input.setPlaceholderText("Enter BMS Server IP (e.g., 192.168.0.1)")
-        self.ip_input.setText("10.249.163.101")
+        self.ip_input.setPlaceholderText("Enter BMS Device IP (e.g., 192.168.0.1)")
+        self.ip_input.setText("1.1.1.115")
         layout.addWidget(self.ip_label)
         layout.addWidget(self.ip_input)
 
         # 端口 输入框
-        self.port_label = QLabel('BMS Server Port:')
+        self.port_label = QLabel('BMS Local Port:')
         self.port_label.setFont(QFont("Arial", 10))
         self.port_input = QLineEdit(self)
-        self.port_input.setPlaceholderText("Enter BMS Server Port (e.g., 47808)")
+        self.port_input.setPlaceholderText("Enter BMS Local Port (e.g., 47808)")
         self.port_input.setText("47809")
         layout.addWidget(self.port_label)
         layout.addWidget(self.port_input)
@@ -46,7 +50,7 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         self.device_port_label.setFont(QFont("Arial", 10))
         self.device_port_input = QLineEdit()
         self.device_port_input.setPlaceholderText("Enter Device Port (e.g., 59194)")
-        self.device_port_input.setText("61636")
+        self.device_port_input.setText("56530")
         layout.addWidget(self.device_port_label)
         layout.addWidget(self.device_port_input)
 
@@ -81,6 +85,12 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         self.read_button.clicked.connect(self.save_setting)
         self.read_button.clicked.connect(self.goto_bms_main)
         button_layout.addWidget(self.read_button)
+
+        # 清除数据按钮
+        self.clear_data_button = QPushButton('Clear Data')
+        self.clear_data_button.setFont(QFont("Arial", 11, QFont.Bold))
+        self.clear_data_button.clicked.connect(self.handle_clear_data)
+        button_layout.addWidget(self.clear_data_button)
 
         layout.addLayout(button_layout)
         self.setLayout(layout)
@@ -121,13 +131,14 @@ class BMSIntegrationApp(QtWidgets.QWidget):
             }
         """)
 
+
     def save_setting(self):
         port = self.port_input.text().strip()
         settings.setValue("port", port)  # 存入 QSettings
         ip = self.ip_input.text().strip()
         settings.setValue("ip", ip)  # 存入 QSettings
-        device_id='RoomSimulator'
-        settings.setValue("device_id",device_id)
+        device_id = 'RoomSimulator'
+        settings.setValue("device_id", device_id)
         settings.sync()
 
 
@@ -146,20 +157,23 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         except AttributeError as e:
             QMessageBox.critical(self, "Error", f"UI setup error: {e}")
 
+
     def handle_connect(self):
         """ 处理连接操作 """
-        ip = self.ip_input.text().strip()
-        port = self.port_input.text().strip()
+        device_ip = self.ip_input.text().strip()
+        local_port = self.port_input.text().strip()
 
-        if not ip or not port:
+        if not device_ip or not local_port:
             QMessageBox.warning(self, 'Input Error', 'Please provide both IP and Port.')
             return
 
         try:
             # 向后端发送连接请求
+            response_local_ip = requests.get('http://127.0.0.1:5000/bms/get_local_ip').json()
+            local_ip = response_local_ip['local_ip']
             response = requests.post(
                 'http://127.0.0.1:5000/bms/connect_bms',
-                json={'ip': ip, 'port': port}
+                json={'local_ip': local_ip, 'local_port': local_port}
             )
             result = response.json()
 
@@ -170,12 +184,13 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         except requests.ConnectionError:
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
 
+
     def handle_disconnect(self):
         """ 处理断开操作 """
-        ip = self.ip_input.text().strip()
-        port = self.port_input.text().strip()
+        device_ip = self.ip_input.text().strip()
+        local_port = self.port_input.text().strip()
 
-        if not ip or not port:
+        if not device_ip or not local_port:
             QMessageBox.warning(self, 'Input Error', 'Please provide both IP and Port.')
             return
 
@@ -183,7 +198,7 @@ class BMSIntegrationApp(QtWidgets.QWidget):
             # 向后端发送断开请求
             response = requests.post(
                 'http://127.0.0.1:5000/bms/disconnect_bms',
-                json={'ip': ip, 'port': port}
+                json={'ip': device_ip, 'port': local_port}
             )
             result = response.json()
 
@@ -194,15 +209,31 @@ class BMSIntegrationApp(QtWidgets.QWidget):
         except requests.ConnectionError:
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
 
+
+    def handle_clear_data(self):
+        """Handle logic for clearing data."""
+        try:
+            # Call the backend logic to clear data
+            response = requests.post(
+                'http://127.0.0.1:5000/bms/clear_data',
+                json={'clear_all': True, 'value': 5, 'unit': 'minutes'})  # Example: Clears old data for last 10 minutes
+            if response.status_code == 200:
+                QMessageBox.information(self, "Success", "Data cleared successfully!")
+            else:
+                QMessageBox.warning(self, "Failure", "Failed to clear data.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred: {e}")
+
+
     def handle_read_data(self):
         """ 处理读取数据操作 """
-        ip = self.ip_input.text().strip()
-        port = self.port_input.text().strip()
+        device_ip = self.ip_input.text().strip()
+        local_port = self.port_input.text().strip()
         device_id = 'RoomSimulator'
         device_port = self.device_port_input.text().strip()
         object_instance = self.object_instance_input.text().strip()
 
-        if not ip or not port:
+        if not device_ip or not local_port:
             QMessageBox.warning(self, 'Input Error', 'Please provide both IP and Port.')
             return
 
@@ -219,9 +250,9 @@ class BMSIntegrationApp(QtWidgets.QWidget):
                     'action': action,
                     'save_data': save_data,
                     'db_name': db_name,
-                    'ip': ip,
-                    'device_id':device_id,
-                    'server_port': port,
+                    'device_ip': device_ip,
+                    'device_id': device_id,
+                    'local_port': local_port,
                     'device_port': device_port,
                     'object_instance': object_instance,
                     'interval': 1

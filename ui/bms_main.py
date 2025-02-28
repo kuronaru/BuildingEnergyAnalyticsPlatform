@@ -1,11 +1,12 @@
-from PyQt5 import QtCore, QtGui, QtWidgets, Qt
-from PyQt5.QtGui import QPixmap, QColor, QPen
-from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidget, QCheckBox, QWidget, QHBoxLayout, QGraphicsScene, \
-    QGraphicsPixmapItem, QGraphicsLineItem, QGraphicsTextItem
-from PyQt5.QtCore import QSettings
 import requests
-from server_status import SUCCESS
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox, QHBoxLayout
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import QSettings
+from PyQt5.QtGui import QColor, QPen
+from PyQt5.QtWidgets import QTreeWidgetItem, QTreeWidget, QCheckBox, QGraphicsScene, \
+    QGraphicsLineItem, QGraphicsTextItem, QMenu
+from PyQt5.QtWidgets import QWidget, QMessageBox, QHBoxLayout
+
+
 class Ui_main(object):
     def setupUi(self, main):
         main.setObjectName("main")
@@ -33,11 +34,11 @@ class Ui_main(object):
         self.tree.setHeaderLabels(['Key'])
         self.tree.setHeaderHidden(True)
         root = QTreeWidgetItem(self.tree)
-        port = load_port()
+        port = load_setting('port', '5000')
 
         root.setText(0, 'UDP:'+str(port))  # 确保是字符串
         child1 = QTreeWidgetItem(root)
-        ip=load_ip()
+        ip = load_setting('ip', '127.0.0.1')
 
         child1.setText(0, ip)
         self.tree.itemDoubleClicked.connect(self.on_item_double_clicked)
@@ -122,8 +123,9 @@ class Ui_main(object):
         self.Log.setText(_translate("main", "Log"))
 
     def on_item_double_clicked(self,item):
-        device_id=load_device_id()
-        ip=load_ip()
+        device_id=load_setting('device_id', '1')
+        ip=load_setting('ip', '127.0.0.1')
+        port=load_setting('port', '5000')
         text = item.text(0)
         if text == ip:
             if self.treeView.isColumnHidden(0):
@@ -135,22 +137,13 @@ class Ui_main(object):
                     )
                     result = response.json()
 
-                    # if result['status'] == SUCCESS:
-                    #     QMessageBox.information(self, 'Success', result['message'])
-                    # else:
-                    #     QMessageBox.warning(self, 'Error', result['message'])
                 except requests.ConnectionError:
                     QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
-
-
-                device_id = result['device_id']
-
 
                 # 遍历 objects 列表
                 for obj in result['objects']:
                     instance = obj.get('object_instance', None)
                     obj_type = obj.get('object_type', None)
-
 
                 self.treeView.setColumnHidden(0,False)
                 root_item = QTreeWidgetItem(self.treeView, [str(device_id)])
@@ -158,27 +151,23 @@ class Ui_main(object):
 
             else:
                 return
-        elif ":" in text:
-            obj_type, instance = text.split(":", 1)
-            if obj_type == "analogInput" and instance == "0":
-                print(1)
-            elif obj_type == "analogOutput" and instance == "1":
-                print(2)
+        # elif ":" in text:
+        #     obj_type, instance = text.split(":", 1)
+        #     if obj_type == "analogInput" and instance == "0":
+        #         print(1)
+        #     elif obj_type == "analogOutput" and instance == "1":
+        #         print(2)
 
+    def on_tree_item_right_click(self, position):
+        item = self.treeView.itemAt(position)
+        if item is not None:
+            menu = QMenu()
+            subscribe_action = menu.addAction("Subscribe")
+            action = menu.exec_(self.treeView.viewport().mapToGlobal(position))
 
-        """""
-        elif item.text(0) == 'Temperature.Indoor (AI:0)':
-            row = self.tableWidget.rowCount()
-            self.tableWidget.insertRow(row)
-            self.setup_checkbox(self.tableWidget, row, 0)
-            self.tableWidget.setItem(row, 1, QtWidgets.QTableWidgetItem("1664976"))
-            self.tableWidget.setItem(row, 2, QtWidgets.QTableWidgetItem("1664976"))
-            self.tableWidget.setItem(row, 3, QtWidgets.QTableWidgetItem("AI:1"))
-            self.tableWidget.setItem(row, 4, QtWidgets.QTableWidgetItem("Temperature Water"))
-            self.tableWidget.setItem(row, 5, QtWidgets.QTableWidgetItem("20"))
-            self.tableWidget.setItem(row, 6, QtWidgets.QTableWidgetItem("17:00:00"))
-            self.tableWidget.setItem(row, 7, QtWidgets.QTableWidgetItem("OK"))
-        """
+            if action == subscribe_action:
+                object_name = item.text()  # Assume the object name is the item's text.
+                self.subscribe_to_object(object_name)
 
     def setup_checkbox(self, table_widget, row1, column):
         widget = QWidget()  # 方法内的局部变量，每次调用都是新的副本，所以才能单独让每个tablewidget的勾选框独立连接信号
@@ -271,21 +260,17 @@ class Ui_main(object):
         self.graphicsView.setScene(None)
 
 
-def load_port():
-    """ 读取 QSettings 里的端口，确保返回字符串 """
+def load_setting(key, default_value):
+    """
+    通用的读取 QSettings 设置的函数，确保返回字符串
+    :param key: 配置的键名，例如 'port', 'ip', 'device_id'
+    :param default_value: 如果配置不存在时返回的默认值
+    :return: 配置值，类型为字符串
+    """
     settings = QSettings("MyCompany", "BMSApp")
-    port = settings.value("port", "12345")  # 读取端口，默认值 12345
-    return str(port)  # 确保返回的是字符串
+    value = settings.value(key, default_value)  # 读取配置，如果没有则返回默认值
+    return str(value)  # 确保返回的是字符串
 
-def load_ip():
-    settings = QSettings("MyCompany", "BMSApp")
-    ip = settings.value("ip", "1.1")  # 读取端口，默认值 12345
-    return str(ip)  # 确保返回的是字符串
-
-def load_device_id():
-    settings = QSettings("MyCompany", "BMSApp")
-    device_id = settings.value("device_id", "1.1")  # 读取端口，默认值 12345
-    return str(device_id)  # 确保返回的是字符串
 
 
 

@@ -1,6 +1,7 @@
 from applications.extensions import db
 from datetime import datetime
 from pytz import timezone
+from datetime import datetime, timedelta
 
 class BMSData(db.Model):
     """存储 BACnet 读取的数据"""
@@ -12,7 +13,11 @@ class BMSData(db.Model):
     object_type = db.Column(db.String(50), nullable=False)
     object_instance = db.Column(db.Integer, nullable=False)
     value = db.Column(db.Float, nullable=False)
-    timestamp = db.Column(db.DateTime, default=lambda : datetime.now(timezone('Asia/Singapore')))
+    timestamp = db.Column(db.DateTime, default=db.func.datetime("now", "+8 hours"))
+    # timestamp = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+
+
 
 class BMSModel():
     @staticmethod

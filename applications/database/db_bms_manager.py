@@ -47,16 +47,20 @@ class BMSDataManager:
             print(f"Error retrieving latest BMS data: {e}")
             return None
 
-
     @staticmethod
-    def clear_old_data(days: int) -> bool:
-        """清除 N 天前的数据"""
+    def clear_old_data(value: int, unit: str) :
+        """清除当前时间前十分钟的数据"""
         try:
-            db.session.query(BMSData).filter(BMSData.timestamp < db.func.date_sub(db.func.current_timestamp(), db.text(f"INTERVAL {days} DAY"))).delete()
+            valid_units = {'minutes': 'minute', 'hours': 'hour', 'days': 'day'}
+            if unit not in valid_units:
+                raise ValueError(f"Invalid unit: {unit}. Valid options are: {list(valid_units.keys())}")
+
+            db.session.query(BMSData).filter(
+                BMSData.timestamp < db.func.datetime("now", "+8 hours", f"-{value} {valid_units[unit]}")
+            ).delete()
             db.session.commit()
-            return True
+
         except Exception as e:
             print(f"Error clearing old BMS data: {e}")
-            return False
         finally:
             db.session.close()

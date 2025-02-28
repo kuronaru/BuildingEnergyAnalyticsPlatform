@@ -45,7 +45,7 @@ def receive_data_loop(request_properties, interval, stop_event=None, app=None):
     while not stop_event.is_set():
         try:
             # 使用 asyncio.run 调用 async_read，并处理结果
-            result = asyncio.run(async_read(request_properties, timeout=1))  # 超时时间为 1 秒
+            result = asyncio.run(async_read(request_properties, timeout=2))  # 超时时间为 2 秒
             if result:
                 logger.debug(f"Received BMS data: {result}")
                 # 数据库存储
@@ -114,7 +114,7 @@ def get_device_objects_service(device_id):
             BMSData.object_type, BMSData.object_instance
         ).filter(
             BMSData.device_id == device_id
-        ).distinct().all()
+        ).all()
 
         # 格式化数据
         results = [

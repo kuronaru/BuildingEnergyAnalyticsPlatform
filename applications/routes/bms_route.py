@@ -20,8 +20,9 @@ receive_task_futures = {}
 @bms_bp.route('/get_local_ip', methods=['GET'])
 def get_local_ip():
     try:
+        print(socket.gethostbyname(socket.gethostname()))
         local_ip = socket.gethostbyname(socket.gethostname())
-        return jsonify({'status': SUCCESS, 'local_ip': local_ip})
+        return jsonify({'local_ip': local_ip})
     except Exception as e:
         logger.error(f"Error retrieving local IP: {e}")
         return jsonify({'status': FAILURE, 'message': "Error retrieving local IP."})
@@ -30,35 +31,53 @@ def get_local_ip():
 @bms_bp.route('/connect_bms', methods=['POST'])
 def connect_bms():
     data = request.get_json()
-    ip = data.get('ip')
-    port = data.get('port')
+    local_ip = data.get('local_ip')
+    local_port = data.get('local_port')
 
-    if not ip or not port:
+    if not local_ip or not local_port:
         return jsonify({'status': FAILURE, 'message': "IP or port is missing."})
 
-    connection_status = connect_to_bms(ip, port)
+    connection_status = connect_to_bms(local_ip, local_port)
 
     if connection_status:
-        return jsonify({'status': SUCCESS, 'message': f"Connected to BMS server at {ip}:{port}."})
+        return jsonify({'status': SUCCESS, 'message': f"Connected to BMS server at {local_ip}:{local_port}."})
     else:
-        return jsonify({'status': FAILURE, 'message': f"Failed to connect to {ip}:{port}."})
+        return jsonify({'status': FAILURE, 'message': f"Failed to connect to {local_ip}:{local_port}."})
 
 
 @bms_bp.route('/disconnect_bms', methods=['POST'])
 def disconnect_bms():
     data = request.get_json()
-    ip = data.get('ip')
-    port = data.get('port')
+    local_ip = data.get('local_ip')
+    local_port = data.get('local_port')
 
-    if not ip or not port:
+    if not local_ip or not local_port:
         return jsonify({'status': FAILURE, 'message': "IP or port is missing."})
 
-    disconnection_status = disconnect_from_bms(ip, port)
+    connection_status = connect_to_bms(local_ip, local_port)
 
-    if disconnection_status:
-        return jsonify({'status': SUCCESS, 'message': f"Disconnected to BMS server at {ip}:{port}."})
+    if connection_status:
+        return jsonify({'status': SUCCESS, 'message': f"Disconnected to BMS server at {local_ip}:{local_port}."})
     else:
-        return jsonify({'status': FAILURE, 'message': f"Failed to disconnect from {ip}:{port}."})
+        return jsonify({'status': FAILURE, 'message': f"Failed to disconnect to {local_ip}:{local_port}."})
+
+@bms_bp.route('/clear_data', methods=['POST'])
+def clear_data():
+    try:
+        clear_all = request.json.get("clear_all", False)
+        value = request.json.get("value", None)
+        unit = request.json.get("unit", None)
+
+        if clear_all:
+            BMSDataManager.clear_old_data(value, unit)
+        else:
+            return jsonify({"message": "Invalid request, no instructions provided"}), 400
+
+        return jsonify({"message": "Data cleared successfully"}), 200
+
+    except Exception as e:
+        logger.error(f"Error during data clearing: {e}")
+        return jsonify({"message": f"An error occurred: {e}"}), 500
 
 
 @bms_bp.route('/receive_data', methods=['POST'])
@@ -69,16 +88,16 @@ def receive_data():
     data = request.get_json()
     action = data.get('action')  # 'start' or 'stop'
     device_id = data.get('device_id') # 设备号
-    ip = data.get('ip')  # 服务器IP
-    port = data.get('server_port')  # 服务器端口
+    device_ip = data.get('device_ip')  # 设备ip
+    local_port = data.get('local_port')  # 服务器端口
     device_port = data.get('device_port') # 设备端口
     object_instance = data.get('object_instance')
     interval = data.get('interval')
 
     read_properties = {
         "device_id": device_id,
-        "device_ip": ip,
-        "server_port": port,
+        "device_ip": device_ip,
+        "local_port": local_port,
         "device_port": device_port,
         "object_type": "analogInput",
         "object_instance": object_instance,
@@ -95,12 +114,12 @@ def receive_data():
 
                 return jsonify({
                     'status': SUCCESS,
-                    'message': f"Task started successfully for device at {ip}:{port}, object_instance: {object_instance}."
+                    'message': f"Task started successfully for device at {device_ip}:{device_port}, object_instance: {object_instance}."
                 })
             else:  # 如果任务启动失败
                 return jsonify({
                     'status': FAILURE,
-                    'message': f"Failed to start task for device at {ip}:{port}, object_instance: {object_instance}."
+                    'message': f"Failed to start task for device at {device_ip}:{device_port}, object_instance: {object_instance}."
                 })
         except Exception as e:
             logger.error(f"Error in receive_data: {e}")
@@ -115,7 +134,7 @@ def receive_data():
             if not future:
                 return jsonify({
                     'status': FAILURE,
-                    'message': f"No running task found for device at {ip}:{port}, object_instance: {object_instance}."
+                    'message': f"No running task found for device at {device_ip}:{device_port}, object_instance: {object_instance}."
                 })
 
             # 停止任务
@@ -123,19 +142,19 @@ def receive_data():
                 receive_task_futures.pop(task_key, None)
                 return jsonify({
                     'status': SUCCESS,
-                    'message': f"Task stopped successfully for device at {ip}:{port}, object_instance: {object_instance}."
+                    'message': f"Task stopped successfully for device at {device_ip}:{device_port}, object_instance: {object_instance}."
                 })
             else:
                 return jsonify({
                     'status': FAILURE,
-                    'message': f"Failed to stop task for device at {ip}:{port}, object_instance: {object_instance}."
+                    'message': f"Failed to stop task for device at {device_ip}:{device_port}, object_instance: {object_instance}."
                 })
 
         except Exception as e:
             logger.error(f"Error stopping task: {e}")
             return jsonify({
                 'status': FAILURE,
-                'message': f"Error stopping task for device at {ip}:{port}, object_instance: {object_instance}: {str(e)}"
+                'message': f"Error stopping task for device at {device_ip}:{device_port}, object_instance: {object_instance}: {str(e)}"
             })
 
     else:
