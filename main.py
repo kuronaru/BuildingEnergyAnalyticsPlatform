@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QApplication
 
 
 from applications import create_app
-from ui.bms_main import Ui_main
+from ui.ui_bms import Ui_main
 #from ui.mainwindow import Ui_Form
 #from ui.connector import Ui_connector
 

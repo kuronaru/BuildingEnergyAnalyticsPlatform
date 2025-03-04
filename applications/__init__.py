@@ -6,7 +6,7 @@ from applications.database.db_user_manager import UserManager
 from applications.extensions import db
 from applications.routes.bms_route import bms_bp
 from applications.routes.db_mgmt_route import db_mgmt_bp
-from applications.routes.homepage_route import homepage_bp
+from applications.routes.home_route import home_bp
 from applications.routes.login_route import login_bp
 from applications.routes.machine_learning_route import ml_bp
 from applications.routes.sensor_route import sensor_bp
@@ -84,8 +84,8 @@ def create_app():
     #     ThreadPoolManager.shutdown()
 
     # 注册蓝图并初始化模块日志
-    blueprints = [login_bp, homepage_bp, db_mgmt_bp, sensor_bp, ml_bp, viz_bp, bms_bp]
-    url_prefix = ['/', '/homepage', '/db', '/sensor', '/ml', '/viz', '/bms']
+    blueprints = [login_bp, home_bp, db_mgmt_bp, sensor_bp, ml_bp, viz_bp, bms_bp]
+    url_prefix = ['/', '/home', '/db', '/sensor', '/ml', '/viz', '/bms']
     for bp in blueprints:
         app.register_blueprint(bp, url_prefix=url_prefix.pop(0))
 

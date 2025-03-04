@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow
 
 from static.MainWindow import Ui_MainWindow
-from ui.bms_main import Ui_main
+from ui.ui_bms import UIBms
+from ui.ui_form import UIForm
 
 
 class UIMain(QMainWindow, Ui_MainWindow):
@@ -12,7 +13,9 @@ class UIMain(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # 设置页面
-        ui_home = Ui_main()
-        ui_home.setupUi(self.home)
+        ui_bms = UIBms()
+        ui_bms.setupUi(self.home)
+        ui_form = UIForm()
+        ui_form.setupUi(self.dashboard)
 
         # 添加自定义功能

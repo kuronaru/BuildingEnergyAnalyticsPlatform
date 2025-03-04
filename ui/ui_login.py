@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
 from PyQt5 import QtWidgets
 
 #from ui.main_window import MainWindow
-from ui.mainwindow import Ui_Form
+from ui.ui_form import Ui_Form
 from server_status import SUCCESS
 
 

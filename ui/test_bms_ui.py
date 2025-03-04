@@ -144,7 +144,7 @@ class BMSIntegrationApp(QtWidgets.QWidget):
 
     def goto_bms_main(self):
         try:
-            from ui.bms_main import Ui_main  # 这里重新导入
+            from ui.ui_bms import Ui_main  # 这里重新导入
 
             self.bms_main = QtWidgets.QWidget()  # 使用 QMainWindow，而不是 QWidget
             self.ui = Ui_main()

@@ -8,11 +8,11 @@ from applications.models.model_bms import BMSModel
 from applications.models.model_sensor import SensorModel
 from server_status import SUCCESS, FAILURE
 
-homepage_bp = Blueprint('homepage', __name__)
+home_bp = Blueprint('home', __name__)
 logger = getLogger(__name__)
 
 
-@homepage_bp.route('/get_user_info', methods=['GET'])
+@home_bp.route('/get_user_info', methods=['GET'])
 def get_user_info():
     """
     功能：显示用户信息
@@ -29,7 +29,7 @@ def get_user_info():
         return jsonify({'status': FAILURE, 'data': None})
 
 
-@homepage_bp.route('/get_bms_info', methods=['GET'])
+@home_bp.route('/get_bms_info', methods=['GET'])
 def get_bms_info():
     """
     功能：显示 BMS 连接信息
@@ -42,7 +42,7 @@ def get_bms_info():
         return jsonify({'status': FAILURE, 'data': None})
 
 
-@homepage_bp.route('/get_sensor_info', methods=['GET'])
+@home_bp.route('/get_sensor_info', methods=['GET'])
 def get_sensor_info():
     """
     功能：显示传感器信息
@@ -55,7 +55,7 @@ def get_sensor_info():
         return jsonify({'status': FAILURE, 'data': None})
 
 
-@homepage_bp.route('/logout', methods=['POST'])
+@home_bp.route('/logout', methods=['POST'])
 def logout():
     """
     功能：注销并退出登录

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>308</width>
-    <height>144</height>
+    <width>394</width>
+    <height>297</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -114,22 +114,5 @@
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>Start_button</sender>
-   <signal>clicked()</signal>
-   <receiver>connector</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>314</x>
-     <y>94</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>195</x>
-     <y>75</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

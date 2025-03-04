@@ -9,12 +9,12 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from ui.bms_main import Ui_main
+
 
 class Ui_connector(object):
     def setupUi(self, connector):
         connector.setObjectName("connector")
-        connector.resize(308, 144)
+        connector.resize(394, 297)
         self.formLayout = QtWidgets.QFormLayout(connector)
         self.formLayout.setObjectName("formLayout")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
@@ -75,9 +75,8 @@ class Ui_connector(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_4)
         self.verticalLayout_3.addLayout(self.verticalLayout_2)
         self.formLayout.setLayout(0, QtWidgets.QFormLayout.LabelRole, self.verticalLayout_3)
-        self.Start_button.clicked.connect(self.goto_bms_main)
+
         self.retranslateUi(connector)
-        self.Start_button.clicked.connect(connector.close)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(connector)
 
     def retranslateUi(self, connector):
@@ -89,9 +88,3 @@ class Ui_connector(object):
         self.Endpoint_label.setText(_translate("connector", "Device IP"))
         self.label.setText(_translate("connector", "Local Port"))
         self.label_2.setText(_translate("connector", "Local IP"))
-
-    def goto_bms_main(self):
-        self.bms_main = QtWidgets.QWidget()  # 创建一个主窗口
-        self.ui = Ui_main()  # 创建 UI 实例
-        self.ui.setupUi(self.bms_main)  # 将 UI 设置到主窗口上
-        self.bms_main.show()  # 显示主窗口
