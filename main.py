@@ -5,13 +5,14 @@ from PyQt5.QtWidgets import QApplication
 
 
 from applications import create_app
+from ui.bms_main import Ui_main
 #from ui.mainwindow import Ui_Form
 #from ui.connector import Ui_connector
 
 from ui.ui_login import LoginApp
 
 from ui.test_bms_ui import BMSIntegrationApp
-from ui.ui_main import Ui_MainWindow
+from ui.ui_main import UIMain
 
 
 def start_flask():
@@ -31,9 +32,7 @@ if __name__ == '__main__':
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     qt_app = QApplication(sys.argv)
     # main_window = LoginApp()
-    main_window = QtWidgets.QMainWindow()
-    ui = Ui_MainWindow()
-    ui.setupUi(main_window)
+    main_window = UIMain()
     main_window.show()
     """
     main_window = QtWidgets.QWidget()

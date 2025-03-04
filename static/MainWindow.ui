@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>757</width>
-    <height>645</height>
+    <width>1280</width>
+    <height>720</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -24,12 +24,12 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,7">
+   <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="3,14">
     <property name="spacing">
      <number>7</number>
     </property>
@@ -61,26 +61,93 @@
       </property>
       <property name="iconSize">
        <size>
-        <width>0</width>
-        <height>0</height>
+        <width>35</width>
+        <height>35</height>
        </size>
+      </property>
+      <property name="resizeMode">
+       <enum>QListView::Fixed</enum>
+      </property>
+      <property name="spacing">
+       <number>10</number>
+      </property>
+      <property name="gridSize">
+       <size>
+        <width>0</width>
+        <height>60</height>
+       </size>
+      </property>
+      <property name="batchSize">
+       <number>100</number>
+      </property>
+      <property name="currentRow">
+       <number>-1</number>
+      </property>
+      <property name="sortingEnabled">
+       <bool>false</bool>
       </property>
       <item>
        <property name="text">
         <string>Home</string>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>20</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+         <kerning>true</kerning>
+        </font>
+       </property>
+       <property name="icon">
+        <iconset resource="icon.qrc">
+         <normaloff>:/icon/home_regular.png</normaloff>
+         <selectedoff>:/icon/home_solid.png</selectedoff>
+         <selectedon>:/icon/home_regular.png</selectedon>:/icon/home_regular.png</iconset>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
        </property>
       </item>
       <item>
        <property name="text">
         <string>BMS</string>
        </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>20</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="icon">
+        <iconset resource="icon.qrc">
+         <normaloff>:/icon/server_regular.png</normaloff>
+         <selectedoff>:/icon/server_solid.png</selectedoff>
+         <selectedon>:/icon/server_regular.png</selectedon>:/icon/server_regular.png</iconset>
+       </property>
        <property name="flags">
-        <set>ItemIsSelectable|ItemIsEnabled</set>
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
        </property>
       </item>
       <item>
        <property name="text">
         <string>Dashboard</string>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>20</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="icon">
+        <iconset resource="icon.qrc">
+         <normaloff>:/icon/dashboard_regular.png</normaloff>
+         <selectedoff>:/icon/dashboard_solid.png</selectedoff>
+         <selectedon>:/icon/dashboard_regular.png</selectedon>:/icon/dashboard_regular.png</iconset>
        </property>
        <property name="flags">
         <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
@@ -90,10 +157,44 @@
        <property name="text">
         <string>Log</string>
        </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>20</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="icon">
+        <iconset resource="icon.qrc">
+         <normaloff>:/icon/log_regular.png</normaloff>
+         <selectedoff>:/icon/log_solid.png</selectedoff>
+         <selectedon>:/icon/log_regular.png</selectedon>:/icon/log_regular.png</iconset>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
+       </property>
       </item>
       <item>
        <property name="text">
-        <string>User</string>
+        <string>Admin</string>
+       </property>
+       <property name="font">
+        <font>
+         <family>Calibri</family>
+         <pointsize>20</pointsize>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="icon">
+        <iconset resource="icon.qrc">
+         <normaloff>:/icon/user_regular.png</normaloff>
+         <selectedoff>:/icon/user_solid.png</selectedoff>
+         <selectedon>:/icon/user_regular.png</selectedon>:/icon/user_regular.png</iconset>
+       </property>
+       <property name="flags">
+        <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
        </property>
       </item>
      </widget>
@@ -114,7 +215,7 @@
       </property>
       <widget class="QWidget" name="home">
        <property name="enabled">
-        <bool>false</bool>
+        <bool>true</bool>
        </property>
       </widget>
       <widget class="QWidget" name="bms">
@@ -187,7 +288,9 @@
    </layout>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="icon.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>menu</sender>
