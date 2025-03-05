@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1279, 720)
+        MainWindow.resize(1280, 720)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -93,12 +93,14 @@ class Ui_MainWindow(object):
         self.layoutWidget.setObjectName("layoutWidget")
         self.horizontalLayout_1 = QtWidgets.QHBoxLayout(self.layoutWidget)
         self.horizontalLayout_1.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_1.setSpacing(0)
         self.horizontalLayout_1.setObjectName("horizontalLayout_1")
         self.menu = QtWidgets.QListWidget(self.layoutWidget)
         self.menu.setEnabled(True)
         self.menu.setMinimumSize(QtCore.QSize(0, 0))
         self.menu.setAutoFillBackground(False)
-        self.menu.setIconSize(QtCore.QSize(35, 35))
+        self.menu.setStyleSheet("background-color: transparent; border: none;")
+        self.menu.setIconSize(QtCore.QSize(30, 30))
         self.menu.setResizeMode(QtWidgets.QListView.Fixed)
         self.menu.setGridSize(QtCore.QSize(0, 60))
         self.menu.setBatchSize(100)
@@ -207,6 +209,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(MainWindow)
+        self.stackedWidget.setCurrentIndex(0)
         self.menu.setCurrentRow(-1)
         self.pages.setCurrentIndex(2)
         self.menu.currentRowChanged['int'].connect(self.pages.setCurrentIndex) # type: ignore

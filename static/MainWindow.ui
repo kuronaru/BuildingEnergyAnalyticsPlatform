@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1279</width>
+    <width>1280</width>
     <height>720</height>
    </rect>
   </property>
@@ -47,6 +47,9 @@
     </property>
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
       <widget class="QWidget" name="login">
        <widget class="QWidget" name="verticalLayoutWidget">
         <property name="geometry">
@@ -155,6 +158,21 @@
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_1" stretch="2,9">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <item>
           <widget class="QListWidget" name="menu">
            <property name="enabled">
@@ -169,10 +187,13 @@
            <property name="autoFillBackground">
             <bool>false</bool>
            </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: transparent; border: none;</string>
+           </property>
            <property name="iconSize">
             <size>
-             <width>35</width>
-             <height>35</height>
+             <width>30</width>
+             <height>30</height>
             </size>
            </property>
            <property name="resizeMode">
