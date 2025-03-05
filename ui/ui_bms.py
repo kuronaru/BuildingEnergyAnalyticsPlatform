@@ -10,8 +10,6 @@ from static.bms_main import Ui_main
 class UIBms(QWidget, Ui_main):
     def __init__(self):
         super().__init__()
-
-        # 调用生成的 UI 类的 setupUi 方法
         self.setupUi(self)
 
         # 添加自定义功能

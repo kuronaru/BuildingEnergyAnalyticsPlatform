@@ -9,22 +9,15 @@ from static.Form import Ui_Form
 class UIForm(QWidget, Ui_Form):
     def __init__(self):
         super().__init__()
-
-        # 调用生成的 UI 类的 setupUi 方法
         self.setupUi(self)
 
-        # 添加自定义功能
-        self.load_user_info_to_table()
-        self.load_bms_info_to_table()
-        self.pushButton_6.clicked.connect(self.reload_register_interface)
+        # self.load_user_info_to_table()
+        # self.load_bms_info_to_table()
+        # self.pushButton_6.clicked.connect(self.reload_register_interface)
 
     @staticmethod
     def reload_register_interface():
         """重新加载注册界面"""
-        from ui.ui_login import LoginApp
-        ui_login = LoginApp()  # 直接创建 LoginApp 实例
-        ui_login.setWindowModality(QtCore.Qt.ApplicationModal)  # 设置为模态窗口
-        ui_login.show()  # 显示登录界面
 
     def show_page_1(self):
         """切换到第一个页面"""

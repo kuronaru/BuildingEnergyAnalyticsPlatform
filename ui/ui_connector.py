@@ -8,11 +8,8 @@ from ui.ui_bms import Ui_main
 class UIConnector(QWidget, Ui_connector):
     def __init__(self):
         super().__init__()
-
-        # 调用生成的 UI 类的 setupUi 方法
         self.setupUi(self)
 
-        # 添加自定义功能
         self.Start_button.clicked.connect(self.on_start)
 
     @staticmethod

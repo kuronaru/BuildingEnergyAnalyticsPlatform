@@ -1,17 +1,9 @@
 import sys
-import asyncio
 from threading import Thread
-from PyQt5.QtWidgets import QApplication
 
+from PyQt5.QtWidgets import QApplication, QDialog
 
 from applications import create_app
-from ui.ui_bms import Ui_main
-#from ui.mainwindow import Ui_Form
-#from ui.connector import Ui_connector
-
-from ui.ui_login import LoginApp
-
-from ui.test_bms_ui import BMSIntegrationApp
 from ui.ui_main import UIMain
 
 
@@ -27,23 +19,13 @@ if __name__ == '__main__':
     flask_thread.start()
 
     # Start PyQt application
-    from PyQt5 import QtCore, QtWidgets
+    from PyQt5 import QtCore
 
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     qt_app = QApplication(sys.argv)
-    # main_window = LoginApp()
     main_window = UIMain()
     main_window.show()
-    """
-    main_window = QtWidgets.QWidget()
-    ui = Ui_Form()  # 创建 UI 实例
-    ui.setupUi(main_window)  # 将 UI 设置到主窗口上
-    """
-    # connector.show()
-    # ui = Ui_Form()  # 创建 UI 实例
-    # ui.setupUi(main_window)  # 将 UI 设置到主窗口上
 
-
-    bms_window = BMSIntegrationApp()
-    bms_window.show()
+    # bms_window = BMSIntegrationApp()
+    # bms_window.show()
     sys.exit(qt_app.exec_())
