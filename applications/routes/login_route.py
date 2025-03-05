@@ -23,6 +23,7 @@ def login():
     user_manager = UserManager.find_user_by_name(username)
     if user_manager and UserManager.verify_credentials(username, password):
         login_user(user_manager)  # 使用 `UserManager` 实例完成 Flask-Login 登录
+        logger.info(f"Successfully logged in user {username}")
         return jsonify({
             'status': SUCCESS,
             'message': "Login successful",
