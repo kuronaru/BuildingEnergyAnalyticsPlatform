@@ -345,5 +345,22 @@
  <resources>
   <include location="icon.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>menu</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>pages</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>116</x>
+     <y>360</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>759</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
