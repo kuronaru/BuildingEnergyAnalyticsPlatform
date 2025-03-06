@@ -5,6 +5,8 @@ from PyQt5.QtWidgets import QApplication, QDialog
 
 from applications import create_app
 from ui.ui_main import UIMain
+#from ui.ui_bms import UIBms
+#from ui.ui_connector import UIBMSDialog
 
 
 def start_flask():
@@ -23,6 +25,7 @@ if __name__ == '__main__':
 
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     qt_app = QApplication(sys.argv)
+
     main_window = UIMain()
     main_window.show()
 

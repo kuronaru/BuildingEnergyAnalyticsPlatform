@@ -1,11 +1,13 @@
 import requests
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QMainWindow, QTreeWidgetItem, QWidget
 from PyQt5.QtWidgets import QMessageBox
 
 from server_status import SUCCESS
 from static.MainWindow import Ui_MainWindow
 from ui.ui_bms import UIBms
 from ui.ui_form import UIForm
+
 
 
 class UIMain(QMainWindow, Ui_MainWindow):
@@ -15,6 +17,7 @@ class UIMain(QMainWindow, Ui_MainWindow):
 
         # 设置页面
         self.ui_bms = UIBms()
+        # 确保 bmsPage 被正确初始化
         self.ui_bms.setupUi(self.bmsPage)
         self.ui_form = UIForm()
         self.ui_form.setupUi(self.dashboardPage)
@@ -65,3 +68,8 @@ class UIMain(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(self, 'Error', result.get('message', 'Registration failed'))
         except requests.ConnectionError:
             QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
+
+
+
+
+

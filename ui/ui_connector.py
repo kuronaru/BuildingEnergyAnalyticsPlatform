@@ -1,20 +1,34 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QWidget, QDialog
 
-from static.connector import Ui_connector
-from ui.ui_bms import Ui_main
+from static.BMSDialog import Ui_BMSDialog
 
 
-class UIConnector(QWidget, Ui_connector):
-    def __init__(self):
-        super().__init__()
+
+
+class UIBMSDialog(QDialog, Ui_BMSDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)  # 将父窗口传递给 QDialog
         self.setupUi(self)
+        self.remoteIPLineEdit.setText("192.168.1.19")
+        self.remotePortLineEdit.setText("63322")
+        # 在 UIConnector 中使用父窗口
+        self.buttonBox.accepted.connect(self.closeconnector)
 
-        self.Start_button.clicked.connect(self.on_start)
+    def closeconnector(self):
+        """ 关闭 UIConnector 并调用父窗口的 renew 方法 """
+        ip = self.remoteIPLineEdit.text()  # 获取 QLineEdit 中的文本
+        port=self.remotePortLineEdit.text()
+        id=61512
+        settings = QSettings("MyCompany", "BMSApp")  # 设置组织名称和应用名称
+        settings.setValue("ip", ip)  # 保存数据到 QSettings
+        settings.setValue("port", port)
+        settings.setValue("id", id)
 
-    @staticmethod
-    def on_start():
-        bms_main = QtWidgets.QWidget()  # 创建一个主窗口
-        ui = Ui_main()  # 创建 UI 实例
-        ui.setupUi(bms_main)  # 将 UI 设置到主窗口上
-        bms_main.show()  # 显示主窗口
+        self.close()  # 关闭 UIConnector 窗口
+
+        parent = self.parentWidget()
+        parent.renew()  # 调用父窗口的 renew 方法
+
+

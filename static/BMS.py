@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import requests
 # Form implementation generated from reading ui file 'BMS.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.11
@@ -9,10 +9,16 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QSettings
+from PyQt5.QtWidgets import QWidget, QTreeWidgetItem, QLabel, QMessageBox
+
+
 
 
 class Ui_BMS(object):
+
     def setupUi(self, BMS):
+        print("3")
         BMS.setObjectName("BMS")
         BMS.resize(861, 592)
         BMS.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.Singapore))
@@ -97,7 +103,6 @@ class Ui_BMS(object):
         font.setPointSize(11)
         self.instanceTable.setFont(font)
         self.instanceTable.setObjectName("instanceTable")
-        self.instanceTable.setColumnCount(0)
         self.instanceTable.setRowCount(0)
         self.verticalLayout_2.addWidget(self.instanceTable)
         self.diagramLabel = QtWidgets.QLabel(BMS)
@@ -132,6 +137,40 @@ class Ui_BMS(object):
         self.retranslateUi(BMS)
         QtCore.QMetaObject.connectSlotsByName(BMS)
 
+        self.instanceTable.setColumnCount(4)
+        self.instanceTable.setHorizontalHeaderLabels(["Show", "Device", "ObjectID", "Time"])
+        print("1")
+        self.Port_label = QLabel("Double-click to open UIConnector", self)
+        self.deviceTree.setColumnCount(1)
+        self.parent_item = QTreeWidgetItem(self.deviceTree)
+        self.deviceTree.setItemWidget(self.parent_item, 0, self.Port_label)
+        self.Port_label.mouseDoubleClickEvent = self.on_item_double_clicked
+
+    def on_item_double_clicked(self,event):
+        content=self.Port_label.text()
+        if content == "Double-click to open UIConnector":
+            self.start_connector()
+        elif content == load_setting("id"):
+            device_id=load_setting("id")
+            try:
+                        # 向后端发送连接请求
+                        response = requests.get('http://127.0.0.1:5000/bms/device_objects',
+                                                json={'device_id': device_id})
+                        result = response.json()
+
+                        for obj in result['objects']:
+                            instance = obj.get('object_instance', None)
+                            obj_type = obj.get('object_type', None)
+                            self.objectList.addItem(f"{obj_type}: {instance}")
+                            self.objectList.itemDoubleClicked.connect(self.on_content_double_clicked)
+
+            except requests.ConnectionError:
+                QMessageBox.critical(self, 'Error', 'Unable to connect to the server')
+
+        else:
+            return  # elif ":" in text:  #     obj_type, instance = text.split(":", 1)  #     if obj_type == "analogInput" and instance == "0":  #         print(1)  #     elif obj_type == "analogOutput" and instance == "1":  #         print(2)
+
+
     def retranslateUi(self, BMS):
         _translate = QtCore.QCoreApplication.translate
         BMS.setWindowTitle(_translate("BMS", "Form"))
@@ -140,4 +179,16 @@ class Ui_BMS(object):
         self.objectLabel.setText(_translate("BMS", "Objects"))
         self.instanceLabel.setText(_translate("BMS", "Instances"))
         self.diagramLabel.setText(_translate("BMS", "Diagrams"))
+
+def load_setting(key):
+    """
+    通用的读取 QSettings 设置的函数，确保返回字符串
+    :param key: 配置的键名，例如 'port', 'ip', 'device_id'
+    :param default_value: 如果配置不存在时返回的默认值
+    :return: 配置值，类型为字符串
+    """
+    settings = QSettings("MyCompany", "BMSApp")
+    value = settings.value(key, "1111")  # 读取配置，如果没有则返回默认值
+    return str(value)  # 确保返回的是字符串
+
 import resources_rc
