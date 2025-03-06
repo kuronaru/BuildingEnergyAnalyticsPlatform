@@ -48,7 +48,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="login">
        <widget class="QWidget" name="verticalLayoutWidget">
@@ -237,29 +237,7 @@
               <selectedon>:/icon/home_regular.png</selectedon>:/icon/home_regular.png</iconset>
             </property>
             <property name="flags">
-             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>BMS</string>
-            </property>
-            <property name="font">
-             <font>
-              <family>Calibri</family>
-              <pointsize>20</pointsize>
-              <weight>50</weight>
-              <bold>false</bold>
-             </font>
-            </property>
-            <property name="icon">
-             <iconset resource="icon.qrc">
-              <normaloff>:/icon/server_regular.png</normaloff>
-              <selectedoff>:/icon/server_solid.png</selectedoff>
-              <selectedon>:/icon/server_regular.png</selectedon>:/icon/server_regular.png</iconset>
-            </property>
-            <property name="flags">
-             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
+             <set>ItemIsSelectable|ItemIsEnabled</set>
             </property>
            </item>
            <item>
@@ -281,7 +259,87 @@
               <selectedon>:/icon/dashboard_regular.png</selectedon>:/icon/dashboard_regular.png</iconset>
             </property>
             <property name="flags">
-             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
+             <set>ItemIsSelectable|ItemIsEnabled</set>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>BMS</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>20</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="icon">
+             <iconset resource="icon.qrc">
+              <normaloff>:/icon/server_regular.png</normaloff>
+              <selectedoff>:/icon/server_solid.png</selectedoff>
+              <selectedon>:/icon/server_regular.png</selectedon>:/icon/server_regular.png</iconset>
+            </property>
+            <property name="flags">
+             <set>ItemIsSelectable|ItemIsEnabled</set>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Data</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>20</pointsize>
+             </font>
+            </property>
+            <property name="icon">
+             <iconset resource="icon.qrc">
+              <normaloff>:/icon/database_regular.png</normaloff>
+              <selectedoff>:/icon/database_solid.png</selectedoff>
+              <selectedon>:/icon/database_regular.png</selectedon>:/icon/database_regular.png</iconset>
+            </property>
+            <property name="flags">
+             <set>ItemIsSelectable|ItemIsEnabled</set>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Analysis</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>20</pointsize>
+             </font>
+            </property>
+            <property name="icon">
+             <iconset resource="icon.qrc">
+              <normaloff>:/icon/diagram_regular.png</normaloff>
+              <selectedoff>:/icon/diagram_solid.png</selectedoff>:/icon/diagram_regular.png</iconset>
+            </property>
+            <property name="flags">
+             <set>ItemIsSelectable|ItemIsEnabled</set>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Tools</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>20</pointsize>
+             </font>
+            </property>
+            <property name="icon">
+             <iconset resource="icon.qrc">
+              <normaloff>:/icon/tools_regular.png</normaloff>
+              <selectedoff>:/icon/tools_solid.png</selectedoff>:/icon/tools_regular.png</iconset>
+            </property>
+            <property name="flags">
+             <set>ItemIsSelectable|ItemIsEnabled</set>
             </property>
            </item>
            <item>
@@ -303,7 +361,26 @@
               <selectedon>:/icon/log_regular.png</selectedon>:/icon/log_regular.png</iconset>
             </property>
             <property name="flags">
-             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
+             <set>ItemIsSelectable|ItemIsEnabled</set>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Settings</string>
+            </property>
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>20</pointsize>
+             </font>
+            </property>
+            <property name="icon">
+             <iconset resource="icon.qrc">
+              <normaloff>:/icon/setting_regular.png</normaloff>
+              <selectedoff>:/icon/settings_solid.png</selectedoff>:/icon/setting_regular.png</iconset>
+            </property>
+            <property name="flags">
+             <set>ItemIsSelectable|ItemIsEnabled</set>
             </property>
            </item>
            <item>
@@ -325,7 +402,7 @@
               <selectedon>:/icon/user_regular.png</selectedon>:/icon/user_regular.png</iconset>
             </property>
             <property name="flags">
-             <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsEnabled</set>
+             <set>ItemIsSelectable|ItemIsEnabled</set>
             </property>
            </item>
           </widget>
@@ -342,16 +419,20 @@
             <locale language="English" country="Singapore"/>
            </property>
            <property name="currentIndex">
-            <number>2</number>
+            <number>7</number>
            </property>
            <widget class="QWidget" name="homePage">
             <property name="enabled">
              <bool>true</bool>
             </property>
            </widget>
-           <widget class="QWidget" name="bmsPage"/>
            <widget class="QWidget" name="dashboardPage"/>
+           <widget class="QWidget" name="bmsPage"/>
+           <widget class="QWidget" name="dataPage"/>
+           <widget class="QWidget" name="analysisPage"/>
+           <widget class="QWidget" name="toolsPage"/>
            <widget class="QWidget" name="logPage"/>
+           <widget class="QWidget" name="settingsPage"/>
            <widget class="QWidget" name="userPage"/>
           </widget>
          </item>

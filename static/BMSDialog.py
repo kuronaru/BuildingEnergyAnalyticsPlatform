@@ -14,6 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_BMSDialog(object):
     def setupUi(self, BMSDialog):
         BMSDialog.setObjectName("BMSDialog")
+        BMSDialog.setWindowModality(QtCore.Qt.WindowModal)
         BMSDialog.resize(400, 200)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)

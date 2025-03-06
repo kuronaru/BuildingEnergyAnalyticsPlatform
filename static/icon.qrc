@@ -1,5 +1,13 @@
 <RCC>
   <qresource prefix="/">
+    <file>icon/database_regular.png</file>
+    <file>icon/database_solid.png</file>
+    <file>icon/diagram_regular.png</file>
+    <file>icon/diagram_solid.png</file>
+    <file>icon/setting_regular.png</file>
+    <file>icon/settings_solid.png</file>
+    <file>icon/tools_regular.png</file>
+    <file>icon/tools_solid.png</file>
     <file>icon/dashboard_regular.png</file>
     <file>icon/dashboard_solid.png</file>
     <file>icon/home_regular.png</file>
